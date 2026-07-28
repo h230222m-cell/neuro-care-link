@@ -31,7 +31,7 @@ function AuthPage() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     signIn(role, name);
-    navigate({ to: role === "patient" ? "/checkin" : "/dashboard" });
+    navigate({ to: role === "patient" ? "/app" : "/clinician" });
   };
 
   return (

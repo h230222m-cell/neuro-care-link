@@ -9,19 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as CheckinRouteImport } from './routes/checkin'
+import { Route as ClinicianRouteImport } from './routes/clinician'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ClinicianIndexRouteImport } from './routes/clinician.index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as ClinicianAnalyticsRouteImport } from './routes/clinician.analytics'
+import { Route as ClinicianAlertsRouteImport } from './routes/clinician.alerts'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppMedsRouteImport } from './routes/app.meds'
+import { Route as AppHistoryRouteImport } from './routes/app.history'
+import { Route as AppCheckinRouteImport } from './routes/app.checkin'
+import { Route as AppCareRouteImport } from './routes/app.care'
+import { Route as ClinicianPatientsIdRouteImport } from './routes/clinician.patients.$id'
 
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckinRoute = CheckinRouteImport.update({
-  id: '/checkin',
-  path: '/checkin',
+const ClinicianRoute = ClinicianRouteImport.update({
+  id: '/clinician',
+  path: '/clinician',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -29,60 +34,177 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClinicianIndexRoute = ClinicianIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ClinicianRoute,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const ClinicianAnalyticsRoute = ClinicianAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => ClinicianRoute,
+} as any)
+const ClinicianAlertsRoute = ClinicianAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => ClinicianRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMedsRoute = AppMedsRouteImport.update({
+  id: '/meds',
+  path: '/meds',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoryRoute = AppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCheckinRoute = AppCheckinRouteImport.update({
+  id: '/checkin',
+  path: '/checkin',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCareRoute = AppCareRouteImport.update({
+  id: '/care',
+  path: '/care',
+  getParentRoute: () => AppRoute,
+} as any)
+const ClinicianPatientsIdRoute = ClinicianPatientsIdRouteImport.update({
+  id: '/patients/$id',
+  path: '/patients/$id',
+  getParentRoute: () => ClinicianRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
-  '/checkin': typeof CheckinRoute
-  '/dashboard': typeof DashboardRoute
+  '/clinician': typeof ClinicianRouteWithChildren
+  '/app/care': typeof AppCareRoute
+  '/app/checkin': typeof AppCheckinRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/meds': typeof AppMedsRoute
+  '/app/profile': typeof AppProfileRoute
+  '/clinician/alerts': typeof ClinicianAlertsRoute
+  '/clinician/analytics': typeof ClinicianAnalyticsRoute
+  '/app/': typeof AppIndexRoute
+  '/clinician/': typeof ClinicianIndexRoute
+  '/clinician/patients/$id': typeof ClinicianPatientsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/checkin': typeof CheckinRoute
-  '/dashboard': typeof DashboardRoute
+  '/app/care': typeof AppCareRoute
+  '/app/checkin': typeof AppCheckinRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/meds': typeof AppMedsRoute
+  '/app/profile': typeof AppProfileRoute
+  '/clinician/alerts': typeof ClinicianAlertsRoute
+  '/clinician/analytics': typeof ClinicianAnalyticsRoute
+  '/app': typeof AppIndexRoute
+  '/clinician': typeof ClinicianIndexRoute
+  '/clinician/patients/$id': typeof ClinicianPatientsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
-  '/checkin': typeof CheckinRoute
-  '/dashboard': typeof DashboardRoute
+  '/clinician': typeof ClinicianRouteWithChildren
+  '/app/care': typeof AppCareRoute
+  '/app/checkin': typeof AppCheckinRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/meds': typeof AppMedsRoute
+  '/app/profile': typeof AppProfileRoute
+  '/clinician/alerts': typeof ClinicianAlertsRoute
+  '/clinician/analytics': typeof ClinicianAnalyticsRoute
+  '/app/': typeof AppIndexRoute
+  '/clinician/': typeof ClinicianIndexRoute
+  '/clinician/patients/$id': typeof ClinicianPatientsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/checkin' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/clinician'
+    | '/app/care'
+    | '/app/checkin'
+    | '/app/history'
+    | '/app/meds'
+    | '/app/profile'
+    | '/clinician/alerts'
+    | '/clinician/analytics'
+    | '/app/'
+    | '/clinician/'
+    | '/clinician/patients/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/checkin' | '/dashboard'
-  id: '__root__' | '/' | '/auth' | '/checkin' | '/dashboard'
+  to:
+    | '/'
+    | '/auth'
+    | '/app/care'
+    | '/app/checkin'
+    | '/app/history'
+    | '/app/meds'
+    | '/app/profile'
+    | '/clinician/alerts'
+    | '/clinician/analytics'
+    | '/app'
+    | '/clinician'
+    | '/clinician/patients/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/clinician'
+    | '/app/care'
+    | '/app/checkin'
+    | '/app/history'
+    | '/app/meds'
+    | '/app/profile'
+    | '/clinician/alerts'
+    | '/clinician/analytics'
+    | '/app/'
+    | '/clinician/'
+    | '/clinician/patients/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
-  CheckinRoute: typeof CheckinRoute
-  DashboardRoute: typeof DashboardRoute
+  ClinicianRoute: typeof ClinicianRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkin': {
-      id: '/checkin'
-      path: '/checkin'
-      fullPath: '/checkin'
-      preLoaderRoute: typeof CheckinRouteImport
+    '/clinician': {
+      id: '/clinician'
+      path: '/clinician'
+      fullPath: '/clinician'
+      preLoaderRoute: typeof ClinicianRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -92,6 +214,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -99,14 +228,122 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/clinician/': {
+      id: '/clinician/'
+      path: '/'
+      fullPath: '/clinician/'
+      preLoaderRoute: typeof ClinicianIndexRouteImport
+      parentRoute: typeof ClinicianRoute
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/clinician/analytics': {
+      id: '/clinician/analytics'
+      path: '/analytics'
+      fullPath: '/clinician/analytics'
+      preLoaderRoute: typeof ClinicianAnalyticsRouteImport
+      parentRoute: typeof ClinicianRoute
+    }
+    '/clinician/alerts': {
+      id: '/clinician/alerts'
+      path: '/alerts'
+      fullPath: '/clinician/alerts'
+      preLoaderRoute: typeof ClinicianAlertsRouteImport
+      parentRoute: typeof ClinicianRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/meds': {
+      id: '/app/meds'
+      path: '/meds'
+      fullPath: '/app/meds'
+      preLoaderRoute: typeof AppMedsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/history': {
+      id: '/app/history'
+      path: '/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AppHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/checkin': {
+      id: '/app/checkin'
+      path: '/checkin'
+      fullPath: '/app/checkin'
+      preLoaderRoute: typeof AppCheckinRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/care': {
+      id: '/app/care'
+      path: '/care'
+      fullPath: '/app/care'
+      preLoaderRoute: typeof AppCareRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/clinician/patients/$id': {
+      id: '/clinician/patients/$id'
+      path: '/patients/$id'
+      fullPath: '/clinician/patients/$id'
+      preLoaderRoute: typeof ClinicianPatientsIdRouteImport
+      parentRoute: typeof ClinicianRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppCareRoute: typeof AppCareRoute
+  AppCheckinRoute: typeof AppCheckinRoute
+  AppHistoryRoute: typeof AppHistoryRoute
+  AppMedsRoute: typeof AppMedsRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppCareRoute: AppCareRoute,
+  AppCheckinRoute: AppCheckinRoute,
+  AppHistoryRoute: AppHistoryRoute,
+  AppMedsRoute: AppMedsRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
+interface ClinicianRouteChildren {
+  ClinicianAlertsRoute: typeof ClinicianAlertsRoute
+  ClinicianAnalyticsRoute: typeof ClinicianAnalyticsRoute
+  ClinicianIndexRoute: typeof ClinicianIndexRoute
+  ClinicianPatientsIdRoute: typeof ClinicianPatientsIdRoute
+}
+
+const ClinicianRouteChildren: ClinicianRouteChildren = {
+  ClinicianAlertsRoute: ClinicianAlertsRoute,
+  ClinicianAnalyticsRoute: ClinicianAnalyticsRoute,
+  ClinicianIndexRoute: ClinicianIndexRoute,
+  ClinicianPatientsIdRoute: ClinicianPatientsIdRoute,
+}
+
+const ClinicianRouteWithChildren = ClinicianRoute._addFileChildren(
+  ClinicianRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
-  CheckinRoute: CheckinRoute,
-  DashboardRoute: DashboardRoute,
+  ClinicianRoute: ClinicianRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,25 +1,21 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Logo } from "@/components/Logo";
+import { ChevronLeft } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
-export const Route = createFileRoute("/checkin")({
+export const Route = createFileRoute("/app/checkin")({
   head: () => ({
     meta: [
       { title: "Daily check-in — NeuroTrack" },
-      {
-        name: "description",
-        content: "Confirm your medication, record a short voice sample, and log symptoms.",
-      },
+      { name: "description", content: "Confirm medication, record a voice sample, and log symptoms." },
       { property: "og:title", content: "Daily check-in — NeuroTrack" },
-      { property: "og:description", content: "Your daily Parkinson's check-in, in under two minutes." },
+      { property: "og:description", content: "Under two minutes." },
     ],
   }),
   component: CheckIn,
 });
 
 type MedStatus = "taken" | "missed" | null;
-
 interface Diary {
   tremor: number;
   stiffness: number;
@@ -29,13 +25,8 @@ interface Diary {
 }
 
 function CheckIn() {
-  const { user, signOut, loading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && (!user || user.role !== "patient")) navigate({ to: "/auth", search: { role: "patient" } });
-  }, [user, loading, navigate]);
-
   const [step, setStep] = useState(0);
   const [med, setMed] = useState<MedStatus>(null);
   const [diary, setDiary] = useState<Diary>({ tremor: 2, stiffness: 2, balance: 3, falls: 0, notes: "" });
@@ -46,95 +37,70 @@ function CheckIn() {
   const canNext = [med !== null, voiceOk, true][step];
 
   const submit = () => {
-    // Later: POST to Django. For now just persist locally.
     const payload = { at: new Date().toISOString(), med, diary, voiceOk, userId: user?.id };
-    const key = "neurotrack.checkins";
-    const prev = JSON.parse(localStorage.getItem(key) ?? "[]");
-    localStorage.setItem(key, JSON.stringify([payload, ...prev].slice(0, 30)));
+    const prev = JSON.parse(localStorage.getItem("neurotrack.checkins") ?? "[]");
+    localStorage.setItem("neurotrack.checkins", JSON.stringify([payload, ...prev].slice(0, 30)));
     setSubmitted(true);
   };
 
-  if (!user) return null;
-
   return (
-    <div className="min-h-screen bg-background">
-      <header className="mx-auto flex max-w-2xl items-center justify-between px-6 py-6">
-        <Logo />
-        <button
-          onClick={() => {
-            signOut();
-            navigate({ to: "/" });
-          }}
-          className="text-xs font-medium text-muted-foreground hover:text-foreground"
-        >
-          Sign out
-        </button>
-      </header>
+    <div className="px-5 pb-6 pt-6">
+      <button
+        onClick={() => navigate({ to: "/app" })}
+        className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+      >
+        <ChevronLeft className="h-4 w-4" /> Home
+      </button>
 
-      <main className="mx-auto max-w-2xl px-6 pb-24">
-        {submitted ? (
-          <SubmittedCard onDone={() => navigate({ to: "/" })} />
-        ) : (
-          <>
-            <div className="mb-6">
-              <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-                {greeting()}, {user.name.split(" ")[0]}
-              </p>
-              <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight">
-                Today's check-in
-              </h1>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Takes about two minutes. Your care team at Cimas can see this.
-              </p>
-            </div>
+      {submitted ? (
+        <SubmittedCard onDone={() => navigate({ to: "/app" })} />
+      ) : (
+        <>
+          <h1 className="mt-4 font-display text-2xl font-semibold tracking-tight">Today's check-in</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Takes about two minutes.</p>
 
-            <Stepper steps={steps} current={step} />
+          <Stepper steps={steps} current={step} />
 
-            <section className="surface-card mt-6 p-6">
-              {step === 0 && <MedicationStep value={med} onChange={setMed} />}
-              {step === 1 && <VoiceStep done={voiceOk} onDone={() => setVoiceOk(true)} />}
-              {step === 2 && <DiaryStep value={diary} onChange={setDiary} />}
-            </section>
+          <section className="surface-card mt-6 p-6">
+            {step === 0 && <MedicationStep value={med} onChange={setMed} />}
+            {step === 1 && <VoiceStep done={voiceOk} onDone={() => setVoiceOk(true)} />}
+            {step === 2 && <DiaryStep value={diary} onChange={setDiary} />}
+          </section>
 
-            <div className="mt-6 flex items-center justify-between">
+          <div className="mt-6 flex items-center justify-between">
+            <button
+              onClick={() => setStep((s) => Math.max(0, s - 1))}
+              disabled={step === 0}
+              className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground disabled:opacity-40"
+            >
+              Back
+            </button>
+            {step < steps.length - 1 ? (
               <button
-                onClick={() => setStep((s) => Math.max(0, s - 1))}
-                disabled={step === 0}
-                className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground disabled:opacity-40"
+                onClick={() => setStep((s) => s + 1)}
+                disabled={!canNext}
+                className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] disabled:opacity-40"
               >
-                Back
+                Continue
               </button>
-              {step < steps.length - 1 ? (
-                <button
-                  onClick={() => setStep((s) => s + 1)}
-                  disabled={!canNext}
-                  className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] transition hover:opacity-95 disabled:opacity-40"
-                >
-                  Continue
-                </button>
-              ) : (
-                <button
-                  onClick={submit}
-                  className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] transition hover:opacity-95"
-                >
-                  Submit check-in
-                </button>
-              )}
-            </div>
-
-            <p className="mt-8 rounded-lg border border-border bg-card p-3 text-center text-xs text-muted-foreground">
-              NeuroTrack surfaces trends for your clinician — it does not diagnose or change your medication.
-            </p>
-          </>
-        )}
-      </main>
+            ) : (
+              <button
+                onClick={submit}
+                className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)]"
+              >
+                Submit check-in
+              </button>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
 function Stepper({ steps, current }: { steps: string[]; current: number }) {
   return (
-    <ol className="flex items-center gap-2">
+    <ol className="mt-6 flex items-center gap-2">
       {steps.map((label, i) => {
         const state = i < current ? "done" : i === current ? "active" : "idle";
         return (
@@ -205,7 +171,6 @@ function VoiceStep({ done, onDone }: { done: boolean; onDone: () => void }) {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     if (timerRef.current) clearInterval(timerRef.current);
   };
-
   useEffect(() => () => stop(), []);
 
   const start = async () => {
@@ -216,35 +181,23 @@ function VoiceStep({ done, onDone }: { done: boolean; onDone: () => void }) {
       recRef.current = rec;
       chunksRef.current = [];
       rec.ondataavailable = (e) => chunksRef.current.push(e.data);
-      rec.onstop = () => {
-        // Later: POST chunksRef to FastAPI voice service for MFCC + SVM analysis.
-        setState("done");
-        onDone();
-      };
+      rec.onstop = () => { setState("done"); onDone(); };
       rec.start();
       setState("recording");
       setSeconds(0);
       timerRef.current = setInterval(() => {
         setSeconds((s) => {
-          if (s + 1 >= 10) {
-            stop();
-            return 10;
-          }
+          if (s + 1 >= 10) { stop(); return 10; }
           return s + 1;
         });
       }, 1000);
-    } catch {
-      setState("denied");
-    }
+    } catch { setState("denied"); }
   };
 
   return (
     <div className="text-center">
       <h2 className="font-display text-lg font-semibold">Say "aaah" for 10 seconds</h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Hold a steady vowel. We use short voice samples to track subtle changes over time.
-      </p>
-
+      <p className="mt-1 text-sm text-muted-foreground">Hold a steady vowel — we track subtle changes over time.</p>
       <div className="mt-8 flex flex-col items-center">
         <button
           onClick={state === "recording" ? stop : start}
@@ -253,7 +206,6 @@ function VoiceStep({ done, onDone }: { done: boolean; onDone: () => void }) {
             state === "recording" ? "animate-pulse bg-destructive" : "bg-primary hover:opacity-95"
           } disabled:bg-success`}
           style={state !== "recording" && state !== "done" ? { background: "var(--gradient-primary)" } : undefined}
-          aria-label={state === "recording" ? "Stop recording" : "Start recording"}
         >
           {state === "done" ? (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-10 w-10"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -268,16 +220,9 @@ function VoiceStep({ done, onDone }: { done: boolean; onDone: () => void }) {
           {state === "idle" && "Tap to start"}
           {state === "recording" && `Recording… ${seconds}s / 10s`}
           {state === "done" && "Sample captured ✓"}
-          {state === "denied" && (
-            <span className="text-destructive">Microphone blocked — enable it in your browser.</span>
-          )}
+          {state === "denied" && <span className="text-destructive">Microphone blocked.</span>}
         </div>
       </div>
-
-      <p className="mt-8 text-xs text-muted-foreground">
-        The voice analysis service (MFCC → L1 feature selection → SVM) will run on your recording
-        in the next release.
-      </p>
     </div>
   );
 }
@@ -289,12 +234,10 @@ function DiaryStep({ value, onChange }: { value: Diary; onChange: (v: Diary) => 
     { key: "balance", label: "Balance / walking", max: 5, hint: "0 = very unsteady · 5 = normal" },
     { key: "falls", label: "Falls in last 24h", max: 4, hint: "" },
   ];
-
   return (
     <div>
       <h2 className="font-display text-lg font-semibold">How has today felt?</h2>
       <p className="mt-1 text-sm text-muted-foreground">Quick self-rating — no wrong answers.</p>
-
       <div className="mt-6 space-y-5">
         {rows.map((r) => (
           <div key={r.key}>
@@ -320,7 +263,6 @@ function DiaryStep({ value, onChange }: { value: Diary; onChange: (v: Diary) => 
             {r.hint && <p className="mt-1 text-xs text-muted-foreground">{r.hint}</p>}
           </div>
         ))}
-
         <label className="block">
           <span className="text-sm font-medium text-foreground">Anything else?</span>
           <textarea
@@ -340,29 +282,12 @@ function DiaryStep({ value, onChange }: { value: Diary; onChange: (v: Diary) => 
 function SubmittedCard({ onDone }: { onDone: () => void }) {
   return (
     <div className="surface-card mt-10 p-8 text-center">
-      <div
-        className="mx-auto grid h-16 w-16 place-items-center rounded-full text-primary-foreground"
-        style={{ background: "var(--gradient-primary)" }}
-      >
+      <div className="mx-auto grid h-16 w-16 place-items-center rounded-full text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-8 w-8"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </div>
       <h2 className="mt-5 font-display text-2xl font-semibold">Check-in received</h2>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Thank you. Your Cimas care team will only reach out if something needs attention.
-      </p>
-      <button
-        onClick={onDone}
-        className="mt-6 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)]"
-      >
-        Done
-      </button>
+      <p className="mt-2 text-sm text-muted-foreground">Your Cimas care team will only reach out if something needs attention.</p>
+      <button onClick={onDone} className="mt-6 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)]">Done</button>
     </div>
   );
-}
-
-function greeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 18) return "Good afternoon";
-  return "Good evening";
 }
