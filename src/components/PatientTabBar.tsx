@@ -1,13 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Pill, LineChart, Calendar, User } from "lucide-react";
 
-const tabs = [
+const tabs: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean }> = [
   { to: "/app", label: "Home", icon: Home, exact: true },
   { to: "/app/meds", label: "Meds", icon: Pill },
   { to: "/app/history", label: "Trends", icon: LineChart },
   { to: "/app/care", label: "Care", icon: Calendar },
   { to: "/app/profile", label: "Me", icon: User },
-] as const;
+];
 
 export function PatientTabBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
