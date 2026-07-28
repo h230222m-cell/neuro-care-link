@@ -37,7 +37,7 @@ function PatientDetail() {
       <header className="mt-4 flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-4">
           <div className="grid h-14 w-14 flex-none place-items-center rounded-full bg-primary-soft font-display text-lg font-semibold text-primary">
-            {patient.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+            {patient.name.split(" ").map((n: string) => n[0]).slice(0, 2).join("")}
           </div>
           <div>
             <h1 className="font-display text-2xl font-semibold tracking-tight">{patient.name}</h1>
