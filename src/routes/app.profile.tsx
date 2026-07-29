@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { Bell, Globe, Shield, LogOut, HeartPulse, ChevronRight } from "lucide-react";
+import { usePreferences, type FontScale } from "@/lib/preferences";
+import { Bell, Globe, Shield, LogOut, HeartPulse, ChevronRight, Type } from "lucide-react";
 
 export const Route = createFileRoute("/app/profile")({
   head: () => ({
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/app/profile")({
 
 function Profile() {
   const { user, signOut } = useAuth();
+  const { fontScale, setFontScale } = usePreferences();
   const navigate = useNavigate();
   const [lang, setLang] = useState<"English" | "Shona" | "Ndebele">("English");
   const [remind, setRemind] = useState(true);
@@ -51,6 +53,51 @@ function Profile() {
               <p className="mt-0.5 font-display text-sm font-semibold text-foreground">{r.v}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="mt-5">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Accessibility</h2>
+        <div className="surface-card mt-2 p-4">
+          <div className="flex items-center gap-3">
+            <div className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-primary-soft text-primary">
+              <Type className="h-4 w-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-foreground">Text size</p>
+              <p className="text-xs text-muted-foreground">Make everything easier to read</p>
+            </div>
+          </div>
+          <div className="mt-3 grid grid-cols-4 gap-2" role="radiogroup" aria-label="Text size">
+            {(
+              [
+                { key: "sm", label: "A", px: "text-xs" },
+                { key: "md", label: "A", px: "text-sm" },
+                { key: "lg", label: "A", px: "text-base" },
+                { key: "xl", label: "A", px: "text-lg" },
+              ] as Array<{ key: FontScale; label: string; px: string }>
+            ).map((opt) => {
+              const active = fontScale === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => setFontScale(opt.key)}
+                  className={`flex flex-col items-center justify-center rounded-xl border py-2 transition ${
+                    active
+                      ? "border-primary bg-primary-soft text-primary"
+                      : "border-border bg-background text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span className={`font-display font-semibold ${opt.px}`}>{opt.label}</span>
+                  <span className="mt-0.5 text-[10px] uppercase tracking-wide">
+                    {opt.key === "md" ? "Default" : opt.key.toUpperCase()}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
 
