@@ -1,0 +1,17 @@
+{
+  "name": "NeuroTrack — Cimas Parkinson's Care",
+  "short_name": "NeuroTrack",
+  "description": "Daily Parkinson's check-ins and clinician trend monitoring for Cimas Zimbabwe.",
+  "start_url": "/app",
+  "scope": "/",
+  "id": "/app",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f6fb",
+  "theme_color": "#2f52a8",
+  "categories": ["health", "medical", "lifestyle"],
+  "icons": [
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
