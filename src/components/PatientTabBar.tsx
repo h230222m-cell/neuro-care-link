@@ -14,9 +14,9 @@ export function PatientTabBar() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80"
+      className="sticky bottom-0 z-30 -mt-24 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80"
     >
-      <ul className="mx-auto flex max-w-2xl items-stretch justify-around px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1.5">
+      <ul className="flex items-stretch justify-around px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1.5">
         {tabs.map((t) => {
           const active = t.exact ? pathname === t.to : pathname.startsWith(t.to);
           const Icon = t.icon;
