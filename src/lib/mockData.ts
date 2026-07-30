@@ -7,7 +7,7 @@ export interface CheckIn {
   medTaken: boolean;
   medTime?: string;
   voice: { jitter: number; shimmer: number; stability: number }; // 0..1
-  diary: { tremor: number; stiffness: number; balance: number; falls: number; notes?: string };
+  notes?: string;
 }
 
 export interface Medication {
@@ -26,7 +26,6 @@ export interface Appointment {
   clinician: string;
   when: string; // ISO
   location: string;
-  mode: "in-person" | "tele";
   status: "scheduled" | "completed" | "cancelled";
 }
 
@@ -37,14 +36,6 @@ export interface CareContact {
   facility: string;
   phone: string;
   avatarInitials: string;
-}
-
-export interface Message {
-  id: string;
-  from: "care" | "me";
-  author: string;
-  at: string; // ISO
-  body: string;
 }
 
 export interface PatientSummary {
@@ -93,13 +84,7 @@ export const patientCheckins: CheckIn[] = Array.from({ length: 14 }, (_, i) => (
     shimmer: 0.06 + Math.cos(i / 3) * 0.01,
     stability: 0.88 - i * 0.012 + Math.sin(i) * 0.02,
   },
-  diary: {
-    tremor: Math.max(0, Math.min(5, 2 + Math.round(Math.sin(i / 2) * 1.5))),
-    stiffness: Math.max(0, Math.min(5, 2 + Math.round(Math.cos(i / 3) * 1.2))),
-    balance: Math.max(0, Math.min(5, 3 + Math.round(Math.sin(i / 4) * 1.2))),
-    falls: i === 11 || i === 12 ? 1 : 0,
-    notes: i === 11 ? "Slipped in the kitchen, no injury." : undefined,
-  },
+  notes: i === 11 ? "Voice felt hoarse this morning." : undefined,
 }));
 
 export const patientMedications: Medication[] = [
@@ -139,16 +124,6 @@ export const patientAppointments: Appointment[] = [
     clinician: "Dr. Chikafu",
     when: hoursFromNow(24 * 6 + 2),
     location: "Cimas Borrowdale",
-    mode: "in-person",
-    status: "scheduled",
-  },
-  {
-    id: "a2",
-    title: "Teleconsult · medication review",
-    clinician: "Sr. Ndlovu (RN)",
-    when: hoursFromNow(24 * 2 + 4),
-    location: "Video call",
-    mode: "tele",
     status: "scheduled",
   },
   {
@@ -157,7 +132,6 @@ export const patientAppointments: Appointment[] = [
     clinician: "Dr. Chikafu",
     when: hoursFromNow(-24 * 45),
     location: "Cimas Borrowdale",
-    mode: "in-person",
     status: "completed",
   },
 ];
@@ -189,30 +163,6 @@ export const careTeam: CareContact[] = [
   },
 ];
 
-export const patientMessages: Message[] = [
-  {
-    id: "msg1",
-    from: "care",
-    author: "Sr. Ndlovu",
-    at: hoursFromNow(-30),
-    body: "Hi Tendai — I saw two falls this week. Are you okay? Please try to record your voice sample after breakfast today.",
-  },
-  {
-    id: "msg2",
-    from: "me",
-    author: "Me",
-    at: hoursFromNow(-28),
-    body: "All good, just a slip. Will do the voice sample now.",
-  },
-  {
-    id: "msg3",
-    from: "care",
-    author: "Sr. Ndlovu",
-    at: hoursFromNow(-27),
-    body: "Thank you. We've booked a short teleconsult with Dr. Chikafu on Thursday to review your Levodopa timing.",
-  },
-];
-
 // ---- Clinician (Dr. Chikafu) ----
 
 export const roster: PatientSummary[] = [
@@ -226,7 +176,7 @@ export const roster: PatientSummary[] = [
     adherence7d: 0.4,
     lastCheckIn: hoursFromNow(-6),
     voiceTrend: [0.88, 0.87, 0.86, 0.85, 0.86, 0.84, 0.82, 0.81, 0.79, 0.78, 0.75, 0.72, 0.71, 0.69],
-    flag: "2 falls in 48h · voice stability −18% vs baseline",
+    flag: "Voice stability −18% vs baseline · 3 missed doses",
   },
   {
     id: "p2",
@@ -293,7 +243,7 @@ export const alerts: Alert[] = [
     patientId: "p1",
     patientName: "Tendai Moyo",
     tier: "tier1",
-    reason: "2 falls logged in 48h with sharp voice-stability drop.",
+    reason: "Sharp voice-stability drop with missed morning doses.",
     at: hoursFromNow(-5),
     acknowledged: false,
   },
@@ -302,7 +252,7 @@ export const alerts: Alert[] = [
     patientId: "p2",
     patientName: "Grace Ncube",
     tier: "tier2",
-    reason: "Voice tremor trending up 10 days; stiffness score rising.",
+    reason: "Voice jitter trending up over 10 days.",
     at: hoursFromNow(-26),
     acknowledged: false,
   },
