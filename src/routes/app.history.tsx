@@ -3,43 +3,45 @@ import { useState } from "react";
 import { patientCheckins } from "@/lib/mockData";
 import { Sparkline } from "@/components/Sparkline";
 
-type Metric = "voice" | "tremor" | "stiffness" | "balance";
+type Metric = "stability" | "jitter" | "shimmer";
 
 export const Route = createFileRoute("/app/history")({
   head: () => ({
     meta: [
-      { title: "History & Trends — NeuroTrack" },
-      { name: "description", content: "Two-week trends for voice, tremor, stiffness and balance." },
-      { property: "og:title", content: "History & Trends — NeuroTrack" },
-      { property: "og:description", content: "Your symptom trends over time." },
+      { title: "Voice trends — NeuroTrack" },
+      { name: "description", content: "Two-week voice trends and medication adherence history." },
+      { property: "og:title", content: "Voice trends — NeuroTrack" },
+      { property: "og:description", content: "Your voice and adherence trends over time." },
     ],
   }),
   component: History,
 });
 
-function History() {
-  const [metric, setMetric] = useState<Metric>("voice");
-  const series =
-    metric === "voice"
-      ? patientCheckins.map((c) => c.voice.stability)
-      : patientCheckins.map((c) => c.diary[metric] as number);
+const labels: Record<Metric, string> = {
+  stability: "Voice stability",
+  jitter: "Jitter",
+  shimmer: "Shimmer",
+};
 
-  const labels: Record<Metric, string> = {
-    voice: "Voice stability",
-    tremor: "Tremor",
-    stiffness: "Stiffness",
-    balance: "Balance",
-  };
+function History() {
+  const [metric, setMetric] = useState<Metric>("stability");
+  const series = patientCheckins.map((c) => c.voice[metric]);
+
   const latest = series.at(-1)!;
   const first = series[0];
   const delta = ((latest - first) / (first || 1)) * 100;
+  // For jitter/shimmer a rise is unfavourable; for stability a rise is good.
+  const good = metric === "stability" ? delta >= 0 : delta <= 0;
+  const adherence = Math.round(
+    (patientCheckins.filter((c) => c.medTaken).length / patientCheckins.length) * 100,
+  );
 
   return (
     <div className="px-5 pb-6 pt-6">
-      <h1 className="font-display text-2xl font-semibold tracking-tight">History & Trends</h1>
+      <h1 className="font-display text-2xl font-semibold tracking-tight">Voice trends</h1>
       <p className="mt-1 text-sm text-muted-foreground">Last 14 days.</p>
 
-      <div className="mt-5 flex gap-1.5 overflow-x-auto pb-1">
+      <div className="mt-5 flex flex-wrap gap-1.5">
         {(Object.keys(labels) as Metric[]).map((k) => (
           <button
             key={k}
@@ -59,13 +61,11 @@ function History() {
         <div className="flex items-baseline justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">{labels[metric]}</p>
-            <p className="mt-0.5 font-display text-2xl font-semibold">
-              {metric === "voice" ? latest.toFixed(2) : latest}
-            </p>
+            <p className="mt-0.5 font-display text-2xl font-semibold">{latest.toFixed(3)}</p>
           </div>
           <span
             className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-              delta >= 0 ? "bg-success/15 text-success-foreground" : "bg-warning/20 text-warning-foreground"
+              good ? "bg-success/15 text-success-foreground" : "bg-warning/20 text-warning-foreground"
             }`}
           >
             {delta >= 0 ? "+" : ""}
@@ -76,6 +76,20 @@ function History() {
         <div className="mt-2 flex justify-between text-[10px] text-muted-foreground">
           <span>{patientCheckins[0].date}</span>
           <span>{patientCheckins.at(-1)!.date}</span>
+        </div>
+      </section>
+
+      <section className="surface-card mt-4 p-5">
+        <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">14-day adherence</p>
+        <p className="mt-0.5 font-display text-2xl font-semibold">{adherence}%</p>
+        <div className="mt-3 flex gap-1">
+          {patientCheckins.map((c) => (
+            <span
+              key={c.date}
+              title={`${c.date} · ${c.medTaken ? "taken" : "missed"}`}
+              className={`h-8 flex-1 rounded ${c.medTaken ? "bg-primary" : "bg-warning/50"}`}
+            />
+          ))}
         </div>
       </section>
 
@@ -96,16 +110,9 @@ function History() {
                   <span className={c.medTaken ? "text-success" : "text-warning-foreground"}>
                     {c.medTaken ? "Meds on time" : "Missed morning"}
                   </span>
-                  <span className="text-muted-foreground">Tremor {c.diary.tremor}</span>
-                  <span className="text-muted-foreground">Stiff {c.diary.stiffness}</span>
-                  <span className="text-muted-foreground">Bal {c.diary.balance}</span>
-                  {c.diary.falls > 0 && (
-                    <span className="font-semibold text-destructive">{c.diary.falls} fall</span>
-                  )}
+                  <span className="text-muted-foreground">Jitter {c.voice.jitter.toFixed(3)}</span>
                 </div>
-                {c.diary.notes && (
-                  <p className="mt-1 truncate text-xs text-muted-foreground">"{c.diary.notes}"</p>
-                )}
+                {c.notes && <p className="mt-1 truncate text-xs text-muted-foreground">"{c.notes}"</p>}
               </div>
               <div className="text-right">
                 <p className="text-[10px] uppercase text-muted-foreground">Voice</p>
