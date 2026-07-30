@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
-import { ShieldCheck, HeartPulse, Activity, Mic } from "lucide-react";
+import { ShieldCheck, HeartPulse, Mic } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
