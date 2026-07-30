@@ -88,7 +88,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "NeuroTrack — Parkinson's monitoring" },
       {
         property: "og:description",
-        content: "Daily patient check-ins and AI-flagged trends for the Cimas care team.",
+        content: "Daily patient check-ins and AI-flagged trends for Cimas clinicians.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
