@@ -16,28 +16,21 @@ export const Route = createFileRoute("/app/checkin")({
 });
 
 type MedStatus = "taken" | "missed" | null;
-interface Diary {
-  tremor: number;
-  stiffness: number;
-  balance: number;
-  falls: number;
-  notes: string;
-}
 
 function CheckIn() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [med, setMed] = useState<MedStatus>(null);
-  const [diary, setDiary] = useState<Diary>({ tremor: 2, stiffness: 2, balance: 3, falls: 0, notes: "" });
+  const [notes, setNotes] = useState("");
   const [voiceOk, setVoiceOk] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const steps = ["Medication", "Voice sample", "Symptom diary"];
-  const canNext = [med !== null, voiceOk, true][step];
+  const steps = ["Medication", "Voice sample"];
+  const canNext = [med !== null, voiceOk][step];
 
   const submit = () => {
-    const payload = { at: new Date().toISOString(), med, diary, voiceOk, userId: user?.id };
+    const payload = { at: new Date().toISOString(), med, notes, voiceOk, userId: user?.id };
     const prev = JSON.parse(localStorage.getItem("neurotrack.checkins") ?? "[]");
     localStorage.setItem("neurotrack.checkins", JSON.stringify([payload, ...prev].slice(0, 30)));
     setSubmitted(true);
@@ -57,14 +50,28 @@ function CheckIn() {
       ) : (
         <>
           <h1 className="mt-4 font-display text-2xl font-semibold tracking-tight">Today's check-in</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Takes about two minutes.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Takes about one minute.</p>
 
           <Stepper steps={steps} current={step} />
 
           <section className="surface-card mt-6 p-6">
             {step === 0 && <MedicationStep value={med} onChange={setMed} />}
-            {step === 1 && <VoiceStep done={voiceOk} onDone={() => setVoiceOk(true)} />}
-            {step === 2 && <DiaryStep value={diary} onChange={setDiary} />}
+            {step === 1 && (
+              <>
+                <VoiceStep done={voiceOk} onDone={() => setVoiceOk(true)} />
+                <label className="mt-8 block">
+                  <span className="text-sm font-medium text-foreground">Anything else? (optional)</span>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    maxLength={500}
+                    rows={3}
+                    placeholder="Optional note for your care team…"
+                    className="mt-1.5 w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:border-ring focus:ring-2"
+                  />
+                </label>
+              </>
+            )}
           </section>
 
           <div className="mt-6 flex items-center justify-between">
@@ -222,58 +229,6 @@ function VoiceStep({ done, onDone }: { done: boolean; onDone: () => void }) {
           {state === "done" && "Sample captured ✓"}
           {state === "denied" && <span className="text-destructive">Microphone blocked.</span>}
         </div>
-      </div>
-    </div>
-  );
-}
-
-function DiaryStep({ value, onChange }: { value: Diary; onChange: (v: Diary) => void }) {
-  const rows: Array<{ key: keyof Diary; label: string; max: number; hint: string }> = [
-    { key: "tremor", label: "Tremor today", max: 5, hint: "0 = none · 5 = severe" },
-    { key: "stiffness", label: "Stiffness", max: 5, hint: "0 = none · 5 = severe" },
-    { key: "balance", label: "Balance / walking", max: 5, hint: "0 = very unsteady · 5 = normal" },
-    { key: "falls", label: "Falls in last 24h", max: 4, hint: "" },
-  ];
-  return (
-    <div>
-      <h2 className="font-display text-lg font-semibold">How has today felt?</h2>
-      <p className="mt-1 text-sm text-muted-foreground">Quick self-rating — no wrong answers.</p>
-      <div className="mt-6 space-y-5">
-        {rows.map((r) => (
-          <div key={r.key}>
-            <div className="flex items-baseline justify-between">
-              <span className="text-sm font-medium text-foreground">{r.label}</span>
-              <span className="text-sm font-semibold text-primary">{value[r.key] as number}</span>
-            </div>
-            <div className="mt-2 flex gap-1.5">
-              {Array.from({ length: r.max + 1 }).map((_, i) => {
-                const active = (value[r.key] as number) >= i;
-                return (
-                  <button
-                    key={i}
-                    onClick={() => onChange({ ...value, [r.key]: i })}
-                    className={`h-8 flex-1 rounded-md border transition ${
-                      active ? "border-primary bg-primary" : "border-border bg-muted hover:bg-primary-soft"
-                    }`}
-                    aria-label={`${r.label} ${i}`}
-                  />
-                );
-              })}
-            </div>
-            {r.hint && <p className="mt-1 text-xs text-muted-foreground">{r.hint}</p>}
-          </div>
-        ))}
-        <label className="block">
-          <span className="text-sm font-medium text-foreground">Anything else?</span>
-          <textarea
-            value={value.notes}
-            onChange={(e) => onChange({ ...value, notes: e.target.value })}
-            maxLength={500}
-            rows={3}
-            placeholder="Optional — dizziness, sleep, mood…"
-            className="mt-1.5 w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:border-ring focus:ring-2"
-          />
-        </label>
       </div>
     </div>
   );

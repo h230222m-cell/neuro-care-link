@@ -3,7 +3,7 @@ import { Logo } from "@/components/Logo";
 import { Sparkline } from "@/components/Sparkline";
 import { useAuth } from "@/lib/auth";
 import { patientCheckins, patientMedications, patientAppointments, fmtRelative } from "@/lib/mockData";
-import { Mic, Pill, Activity, ChevronRight, CalendarClock } from "lucide-react";
+import { Mic, Pill, ChevronRight, CalendarClock } from "lucide-react";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -48,7 +48,7 @@ function Home() {
         <div className="flex items-center justify-between px-5 pt-5">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Today's check-in</p>
-            <p className="mt-0.5 font-display text-lg font-semibold">3 quick things</p>
+            <p className="mt-0.5 font-display text-lg font-semibold">2 quick things</p>
           </div>
           <Link
             to="/app/checkin"
@@ -61,7 +61,6 @@ function Home() {
           {[
             { icon: Pill, label: "Confirm morning Levodopa", done: today.medTaken },
             { icon: Mic, label: "10-second voice sample", done: false },
-            { icon: Activity, label: "Symptom diary", done: false },
           ].map((t) => (
             <li key={t.label} className="flex items-center gap-3 px-5 py-3">
               <span

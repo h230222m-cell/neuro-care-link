@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
-import { ShieldCheck, HeartPulse, Activity, Mic } from "lucide-react";
+import { ShieldCheck, HeartPulse, Mic } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -106,7 +106,6 @@ function Landing() {
                 {[
                   { label: "Morning Levodopa", done: true, icon: ShieldCheck },
                   { label: "10-second voice sample", done: false, icon: Mic },
-                  { label: "Symptom diary", done: false, icon: Activity },
                 ].map((s) => (
                   <li key={s.label} className="flex items-center gap-3 rounded-lg border border-border bg-background/60 px-3 py-2.5">
                     <span className={`grid h-7 w-7 place-items-center rounded-full ${s.done ? "bg-success text-success-foreground" : "bg-primary-soft text-primary"}`}>
@@ -122,7 +121,7 @@ function Landing() {
 
         <section className="mt-24 grid gap-4 md:grid-cols-3">
           {[
-            { t: "Patient app", d: "Home, meds, trends, appointments and care-team chat — designed for phones and older users." },
+            { t: "Patient app", d: "Home, meds, voice trends and appointment reminders — designed for phones and older users." },
             { t: "Clinical console", d: "Roster with tier flags, individual trends, alerts inbox, and cohort analytics." },
             { t: "Voice biomarker", d: "10-second vowel samples feed an MFCC → L1 → SVM pipeline to flag motor decline early." },
           ].map((c) => (
