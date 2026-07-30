@@ -11,10 +11,10 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "A calm daily check-in for patients and a full clinical console for the Cimas care team. Decision-support only.",
+          "A calm daily check-in for patients and a focused clinical console for Cimas. Decision-support only.",
       },
       { property: "og:title", content: "NeuroTrack — Daily monitoring for Parkinson's care" },
-      { property: "og:description", content: "Modular remote monitoring built with Cimas neurology in Zimbabwe." },
+      { property: "og:description", content: "Focused daily monitoring built with Cimas neurology in Zimbabwe." },
     ],
   }),
   component: Landing,
@@ -51,9 +51,8 @@ function Landing() {
               Parkinson's care that checks in, <span className="text-primary">every day</span>.
             </h1>
             <p className="mt-5 max-w-lg text-base leading-relaxed text-muted-foreground">
-              NeuroTrack is a full remote-monitoring platform — daily check-ins, medication
-              tracking, voice-based motor analysis, appointments, and a clinical console for the
-              Cimas neurology team.
+              NeuroTrack keeps Parkinson's monitoring simple: daily medication confirmation,
+              a short voice sample, appointment timing, and a focused clinician console.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -121,7 +120,7 @@ function Landing() {
 
         <section className="mt-24 grid gap-4 md:grid-cols-3">
           {[
-            { t: "Patient app", d: "Home, meds, voice trends and appointment reminders — designed for phones and older users." },
+            { t: "Patient app", d: "Home, medication tracking, voice trends and appointment reminders — designed for phones and older users." },
             { t: "Clinical console", d: "Roster with tier flags, individual trends, alerts inbox, and cohort analytics." },
             { t: "Voice biomarker", d: "10-second vowel samples feed an MFCC → L1 → SVM pipeline to flag motor decline early." },
           ].map((c) => (

@@ -19,7 +19,7 @@ export const Route = createFileRoute("/app/")({
 
 function Home() {
   const { user } = useAuth();
-  const today = patientCheckins.at(-1)!;
+  const today = patientCheckins[patientCheckins.length - 1];
   const streak = 12;
   const adherence = Math.round(
     (patientCheckins.filter((c) => c.medTaken).length / patientCheckins.length) * 100,
@@ -59,7 +59,7 @@ function Home() {
         </div>
         <ul className="mt-4 divide-y divide-border">
           {[
-            { icon: Pill, label: "Confirm morning Levodopa", done: today.medTaken },
+            { icon: Pill, label: "Confirm morning Levodopa", done: today?.medTaken ?? false },
             { icon: Mic, label: "10-second voice sample", done: false },
           ].map((t) => (
             <li key={t.label} className="flex items-center gap-3 px-5 py-3">
@@ -139,8 +139,8 @@ function Home() {
       </section>
 
       <p className="mt-8 rounded-lg border border-border bg-card p-3 text-center text-xs text-muted-foreground">
-        NeuroTrack surfaces trends for your Cimas care team — it does not diagnose or change your
-        medication.
+        NeuroTrack surfaces voice and medication trends for Cimas clinicians — it does not diagnose
+        or change your medication.
       </p>
     </div>
   );
