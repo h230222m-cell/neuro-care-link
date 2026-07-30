@@ -7,7 +7,7 @@ export const Route = createFileRoute("/app/checkin")({
   head: () => ({
     meta: [
       { title: "Daily check-in — NeuroTrack" },
-      { name: "description", content: "Confirm medication, record a voice sample, and log symptoms." },
+      { name: "description", content: "Confirm medication and record a short voice sample." },
       { property: "og:title", content: "Daily check-in — NeuroTrack" },
       { property: "og:description", content: "Under two minutes." },
     ],
@@ -66,7 +66,7 @@ function CheckIn() {
                     onChange={(e) => setNotes(e.target.value)}
                     maxLength={500}
                     rows={3}
-                    placeholder="Optional note for your care team…"
+                    placeholder="Optional note…"
                     className="mt-1.5 w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:border-ring focus:ring-2"
                   />
                 </label>
@@ -241,7 +241,7 @@ function SubmittedCard({ onDone }: { onDone: () => void }) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-8 w-8"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </div>
       <h2 className="mt-5 font-display text-2xl font-semibold">Check-in received</h2>
-      <p className="mt-2 text-sm text-muted-foreground">Your Cimas care team will only reach out if something needs attention.</p>
+      <p className="mt-2 text-sm text-muted-foreground">Saved for your clinician.</p>
       <button onClick={onDone} className="mt-6 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)]">Done</button>
     </div>
   );

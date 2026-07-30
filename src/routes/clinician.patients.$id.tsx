@@ -1,15 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Sparkline } from "@/components/Sparkline";
 import { patientCheckins, roster, tierLabel } from "@/lib/mockData";
-import { ChevronLeft, Phone } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/clinician/patients/$id")({
   head: ({ params }) => ({
     meta: [
       { title: `Patient ${params.id} — NeuroTrack Clinician` },
-      { name: "description", content: "Detailed patient view: trends, medication adherence, voice history and adherence." },
+      { name: "description", content: "Detailed patient view: voice stability and medication adherence." },
       { property: "og:title", content: "Patient detail — NeuroTrack" },
-      { property: "og:description", content: "Full remote-monitoring detail for a Cimas patient." },
+      { property: "og:description", content: "Focused trend detail for a Cimas patient." },
     ],
   }),
   loader: ({ params }) => {
@@ -57,11 +57,6 @@ function PatientDetail() {
             </span>
           </div>
         </div>
-        <div className="flex gap-2">
-          <button className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-medium text-foreground">
-            <Phone className="h-4 w-4" /> Call
-          </button>
-        </div>
       </header>
 
       {patient.flag && (
@@ -83,7 +78,7 @@ function PatientDetail() {
           <p className="text-xs text-muted-foreground">Voice stability · 14d</p>
           <Sparkline values={patient.voiceTrend} className="mt-2 h-12 w-full" />
           <p className="mt-1 text-xs text-muted-foreground">
-            Latest {patient.voiceTrend.at(-1)!.toFixed(2)} · baseline {patient.voiceTrend[0].toFixed(2)}
+              Latest {patient.voiceTrend[patient.voiceTrend.length - 1]?.toFixed(2)} · baseline {patient.voiceTrend[0]?.toFixed(2)}
           </p>
         </div>
         <div className="surface-card p-5">
@@ -96,15 +91,8 @@ function PatientDetail() {
       </section>
 
       <section className="mt-6 surface-card p-5">
-        <h2 className="font-display text-base font-semibold">Voice acoustics · 14 days</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          {(["stability", "jitter", "shimmer"] as const).map((k) => (
-            <div key={k}>
-              <p className="text-xs capitalize text-muted-foreground">{k}</p>
-              <Sparkline values={checkins.map((c) => c.voice[k])} className="mt-1 h-14 w-full" />
-            </div>
-          ))}
-        </div>
+        <h2 className="font-display text-base font-semibold">Voice stability · 14 days</h2>
+        <Sparkline values={checkins.map((c) => c.voice.stability)} className="mt-4 h-20 w-full" />
       </section>
 
       <section className="mt-6">
@@ -122,8 +110,6 @@ function PatientDetail() {
                   <span className={c.medTaken ? "text-success" : "text-warning-foreground"}>
                     {c.medTaken ? "Meds on time" : "Missed morning"}
                   </span>
-                  <span className="text-muted-foreground">Jitter {c.voice.jitter.toFixed(3)}</span>
-                  <span className="text-muted-foreground">Shimmer {c.voice.shimmer.toFixed(3)}</span>
                 </div>
                 {c.notes && <p className="mt-1 text-xs text-muted-foreground">"{c.notes}"</p>}
               </div>

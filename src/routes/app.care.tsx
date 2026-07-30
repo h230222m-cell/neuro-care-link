@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { patientAppointments, careTeam, fmtRelative } from "@/lib/mockData";
-import { MapPin, Phone, CalendarClock } from "lucide-react";
+import { patientAppointments, fmtRelative } from "@/lib/mockData";
+import { MapPin, CalendarClock } from "lucide-react";
 
 export const Route = createFileRoute("/app/care")({
   head: () => ({
     meta: [
       { title: "Appointments — NeuroTrack" },
-      { name: "description", content: "Your next Cimas appointment, time remaining, and care-team contacts." },
+      { name: "description", content: "Your next Cimas appointment and time remaining." },
       { property: "og:title", content: "Appointments — NeuroTrack" },
       { property: "og:description", content: "Know exactly when your next visit is due." },
     ],
@@ -72,32 +72,6 @@ function Care() {
           </ul>
         </section>
       )}
-
-      <section className="mt-6">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Care team</h2>
-        <ul className="mt-2 space-y-3">
-          {careTeam.map((c) => (
-            <li key={c.id} className="surface-card flex items-center gap-4 p-4">
-              <div className="grid h-12 w-12 flex-none place-items-center rounded-full bg-primary-soft font-semibold text-primary">
-                {c.avatarInitials}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-display text-sm font-semibold text-foreground">{c.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {c.role} · {c.facility}
-                </p>
-              </div>
-              <a
-                href={`tel:${c.phone.replace(/\s/g, "")}`}
-                className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground"
-                aria-label={`Call ${c.name}`}
-              >
-                <Phone className="h-4 w-4" />
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
     </div>
   );
 }

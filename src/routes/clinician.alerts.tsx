@@ -9,7 +9,7 @@ export const Route = createFileRoute("/clinician/alerts")({
       { title: "Alerts inbox — NeuroTrack Clinician" },
       { name: "description", content: "Tier 1 and Tier 2 patient escalations, ready to acknowledge or assign." },
       { property: "og:title", content: "Alerts inbox — NeuroTrack Clinician" },
-      { property: "og:description", content: "Escalations for the Cimas care team." },
+      { property: "og:description", content: "Focused Cimas patient escalations." },
     ],
   }),
   component: Alerts,

@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import { patientCheckins } from "@/lib/mockData";
 import { Sparkline } from "@/components/Sparkline";
-
-type Metric = "stability" | "jitter" | "shimmer";
 
 export const Route = createFileRoute("/app/history")({
   head: () => ({
@@ -17,21 +14,15 @@ export const Route = createFileRoute("/app/history")({
   component: History,
 });
 
-const labels: Record<Metric, string> = {
-  stability: "Voice stability",
-  jitter: "Jitter",
-  shimmer: "Shimmer",
-};
-
 function History() {
-  const [metric, setMetric] = useState<Metric>("stability");
-  const series = patientCheckins.map((c) => c.voice[metric]);
+  const series = patientCheckins.map((c) => c.voice.stability);
+  const first = series[0] ?? 0;
+  const latest = series[series.length - 1] ?? 0;
+  const firstCheckin = patientCheckins[0];
+  const latestCheckin = patientCheckins[patientCheckins.length - 1];
 
-  const latest = series.at(-1)!;
-  const first = series[0];
   const delta = ((latest - first) / (first || 1)) * 100;
-  // For jitter/shimmer a rise is unfavourable; for stability a rise is good.
-  const good = metric === "stability" ? delta >= 0 : delta <= 0;
+  const good = delta >= 0;
   const adherence = Math.round(
     (patientCheckins.filter((c) => c.medTaken).length / patientCheckins.length) * 100,
   );
@@ -41,26 +32,10 @@ function History() {
       <h1 className="font-display text-2xl font-semibold tracking-tight">Voice trends</h1>
       <p className="mt-1 text-sm text-muted-foreground">Last 14 days.</p>
 
-      <div className="mt-5 flex flex-wrap gap-1.5">
-        {(Object.keys(labels) as Metric[]).map((k) => (
-          <button
-            key={k}
-            onClick={() => setMetric(k)}
-            className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
-              metric === k
-                ? "bg-primary text-primary-foreground"
-                : "border border-border bg-card text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {labels[k]}
-          </button>
-        ))}
-      </div>
-
       <section className="surface-card mt-4 p-5">
         <div className="flex items-baseline justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">{labels[metric]}</p>
+            <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Voice stability</p>
             <p className="mt-0.5 font-display text-2xl font-semibold">{latest.toFixed(3)}</p>
           </div>
           <span
@@ -74,8 +49,8 @@ function History() {
         </div>
         <Sparkline values={series} className="mt-4 h-24 w-full" />
         <div className="mt-2 flex justify-between text-[10px] text-muted-foreground">
-          <span>{patientCheckins[0].date}</span>
-          <span>{patientCheckins.at(-1)!.date}</span>
+          <span>{firstCheckin?.date}</span>
+          <span>{latestCheckin?.date}</span>
         </div>
       </section>
 
@@ -110,7 +85,6 @@ function History() {
                   <span className={c.medTaken ? "text-success" : "text-warning-foreground"}>
                     {c.medTaken ? "Meds on time" : "Missed morning"}
                   </span>
-                  <span className="text-muted-foreground">Jitter {c.voice.jitter.toFixed(3)}</span>
                 </div>
                 {c.notes && <p className="mt-1 truncate text-xs text-muted-foreground">"{c.notes}"</p>}
               </div>

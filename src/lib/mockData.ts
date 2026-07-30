@@ -6,7 +6,7 @@ export interface CheckIn {
   date: string; // YYYY-MM-DD
   medTaken: boolean;
   medTime?: string;
-  voice: { jitter: number; shimmer: number; stability: number }; // 0..1
+  voice: { stability: number }; // 0..1
   notes?: string;
 }
 
@@ -27,15 +27,6 @@ export interface Appointment {
   when: string; // ISO
   location: string;
   status: "scheduled" | "completed" | "cancelled";
-}
-
-export interface CareContact {
-  id: string;
-  name: string;
-  role: string;
-  facility: string;
-  phone: string;
-  avatarInitials: string;
 }
 
 export interface PatientSummary {
@@ -80,8 +71,6 @@ export const patientCheckins: CheckIn[] = Array.from({ length: 14 }, (_, i) => (
   medTaken: [1, 3, 8].includes(13 - i) ? false : true,
   medTime: "08:12",
   voice: {
-    jitter: 0.014 + Math.sin(i / 2) * 0.004 + i * 0.0006,
-    shimmer: 0.06 + Math.cos(i / 3) * 0.01,
     stability: 0.88 - i * 0.012 + Math.sin(i) * 0.02,
   },
   notes: i === 11 ? "Voice felt hoarse this morning." : undefined,
@@ -136,33 +125,6 @@ export const patientAppointments: Appointment[] = [
   },
 ];
 
-export const careTeam: CareContact[] = [
-  {
-    id: "c1",
-    name: "Dr. Tafadzwa Chikafu",
-    role: "Neurologist",
-    facility: "Cimas Borrowdale",
-    phone: "+263 24 275 0000",
-    avatarInitials: "TC",
-  },
-  {
-    id: "c2",
-    name: "Sr. Rutendo Ndlovu",
-    role: "Care coordinator",
-    facility: "Cimas Care Team",
-    phone: "+263 77 000 0000",
-    avatarInitials: "RN",
-  },
-  {
-    id: "c3",
-    name: "Blessing Moyo",
-    role: "Caregiver (daughter)",
-    facility: "Family contact",
-    phone: "+263 77 111 2222",
-    avatarInitials: "BM",
-  },
-];
-
 // ---- Clinician (Dr. Chikafu) ----
 
 export const roster: PatientSummary[] = [
@@ -188,7 +150,7 @@ export const roster: PatientSummary[] = [
     adherence7d: 0.86,
     lastCheckIn: hoursFromNow(-14),
     voiceTrend: [0.9, 0.9, 0.89, 0.88, 0.88, 0.87, 0.86, 0.85, 0.85, 0.84, 0.83, 0.83, 0.82, 0.81],
-    flag: "Voice tremor trending up over 10 days",
+    flag: "Voice stability declining over 10 days",
   },
   {
     id: "p3",
@@ -252,7 +214,7 @@ export const alerts: Alert[] = [
     patientId: "p2",
     patientName: "Grace Ncube",
     tier: "tier2",
-    reason: "Voice jitter trending up over 10 days.",
+    reason: "Voice stability declining over 10 days.",
     at: hoursFromNow(-26),
     acknowledged: false,
   },
