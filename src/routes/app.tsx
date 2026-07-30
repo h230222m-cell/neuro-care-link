@@ -24,32 +24,29 @@ function PatientShell() {
 
   if (loading) {
     return (
-      <MobileFrame>
+      <Shell>
         <PatientSkeleton label="Signing you in" />
-      </MobileFrame>
+      </Shell>
     );
   }
   if (!user) return null;
 
   return (
-    <MobileFrame>
-      <div className="relative min-h-[100dvh] pb-24">
-        <Outlet />
-        <PatientTabBar />
-      </div>
-    </MobileFrame>
+    <Shell>
+      <Outlet />
+      <PatientTabBar />
+    </Shell>
   );
 }
 
 /**
- * On mobile viewports we fill the screen edge-to-edge. On desktop we render a
- * centered "phone" frame so the patient app always feels like a native mobile
- * surface rather than a stretched web page.
+ * Fluid app shell — the same responsive layout on phone, tablet and desktop.
+ * No simulated device chrome: it is one app that adapts to the viewport.
  */
-function MobileFrame({ children }: { children: React.ReactNode }) {
+function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[radial-gradient(1200px_600px_at_50%_-10%,color-mix(in_oklab,var(--primary)_16%,transparent),transparent)] bg-background md:py-10">
-      <div className="mx-auto min-h-screen w-full max-w-[430px] overflow-hidden bg-background md:min-h-[820px] md:rounded-[2.25rem] md:border md:border-border md:shadow-[0_30px_80px_-30px_color-mix(in_oklab,var(--primary)_35%,transparent)]">
+    <div className="min-h-[100dvh] bg-background">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-3xl flex-col pb-24">
         {children}
       </div>
     </div>
