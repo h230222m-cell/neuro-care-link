@@ -1,13 +1,13 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Sparkline } from "@/components/Sparkline";
 import { patientCheckins, roster, tierLabel } from "@/lib/mockData";
-import { ChevronLeft, Phone, MessageCircle } from "lucide-react";
+import { ChevronLeft, Phone } from "lucide-react";
 
 export const Route = createFileRoute("/clinician/patients/$id")({
   head: ({ params }) => ({
     meta: [
       { title: `Patient ${params.id} — NeuroTrack Clinician` },
-      { name: "description", content: "Detailed patient view: trends, medication adherence, voice history and diary." },
+      { name: "description", content: "Detailed patient view: trends, medication adherence, voice history and adherence." },
       { property: "og:title", content: "Patient detail — NeuroTrack" },
       { property: "og:description", content: "Full remote-monitoring detail for a Cimas patient." },
     ],
@@ -58,9 +58,6 @@ function PatientDetail() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
-            <MessageCircle className="h-4 w-4" /> Message
-          </button>
           <button className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-medium text-foreground">
             <Phone className="h-4 w-4" /> Call
           </button>
@@ -90,24 +87,21 @@ function PatientDetail() {
           </p>
         </div>
         <div className="surface-card p-5">
-          <p className="text-xs text-muted-foreground">Falls · 14d</p>
+          <p className="text-xs text-muted-foreground">Missed doses · 14d</p>
           <p className="mt-1 font-display text-3xl font-semibold text-foreground">
-            {checkins.reduce((s, c) => s + c.diary.falls, 0)}
+            {checkins.filter((c) => !c.medTaken).length}
           </p>
-          <p className="text-xs text-muted-foreground">Reported in daily diary</p>
+          <p className="text-xs text-muted-foreground">From daily medication confirmations</p>
         </div>
       </section>
 
       <section className="mt-6 surface-card p-5">
-        <h2 className="font-display text-base font-semibold">Symptom trends · 14 days</h2>
+        <h2 className="font-display text-base font-semibold">Voice acoustics · 14 days</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          {(["tremor", "stiffness", "balance"] as const).map((k) => (
+          {(["stability", "jitter", "shimmer"] as const).map((k) => (
             <div key={k}>
               <p className="text-xs capitalize text-muted-foreground">{k}</p>
-              <Sparkline
-                values={checkins.map((c) => c.diary[k] as number)}
-                className="mt-1 h-14 w-full"
-              />
+              <Sparkline values={checkins.map((c) => c.voice[k])} className="mt-1 h-14 w-full" />
             </div>
           ))}
         </div>
@@ -128,16 +122,10 @@ function PatientDetail() {
                   <span className={c.medTaken ? "text-success" : "text-warning-foreground"}>
                     {c.medTaken ? "Meds on time" : "Missed morning"}
                   </span>
-                  <span className="text-muted-foreground">Tremor {c.diary.tremor}</span>
-                  <span className="text-muted-foreground">Stiff {c.diary.stiffness}</span>
-                  <span className="text-muted-foreground">Bal {c.diary.balance}</span>
-                  {c.diary.falls > 0 && (
-                    <span className="font-semibold text-destructive">{c.diary.falls} fall</span>
-                  )}
+                  <span className="text-muted-foreground">Jitter {c.voice.jitter.toFixed(3)}</span>
+                  <span className="text-muted-foreground">Shimmer {c.voice.shimmer.toFixed(3)}</span>
                 </div>
-                {c.diary.notes && (
-                  <p className="mt-1 text-xs text-muted-foreground">"{c.diary.notes}"</p>
-                )}
+                {c.notes && <p className="mt-1 text-xs text-muted-foreground">"{c.notes}"</p>}
               </div>
               <div className="text-right">
                 <p className="text-[10px] uppercase text-muted-foreground">Voice</p>
