@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { createDoseLog, listPrescriptions } from "@/lib/api/client";
 
 export const Route = createFileRoute("/app/checkin")({
   head: () => ({
@@ -20,6 +22,8 @@ type MedStatus = "taken" | "missed" | null;
 function CheckIn() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const qc = useQueryClient();
+  const prescriptions = useQuery({ queryKey: ["prescriptions"], queryFn: () => listPrescriptions() });
   const [step, setStep] = useState(0);
   const [med, setMed] = useState<MedStatus>(null);
   const [notes, setNotes] = useState("");
@@ -29,12 +33,31 @@ function CheckIn() {
   const steps = ["Medication", "Voice sample"];
   const canNext = [med !== null, voiceOk][step];
 
-  const submit = () => {
-    const payload = { at: new Date().toISOString(), med, notes, voiceOk, userId: user?.id };
-    const prev = JSON.parse(localStorage.getItem("neurotrack.checkins") ?? "[]");
-    localStorage.setItem("neurotrack.checkins", JSON.stringify([payload, ...prev].slice(0, 30)));
+  const submit = async () => {
+    // One DoseComplianceLog row per active prescription (neurotrack_dosecompliancelog).
+    const active = prescriptions.data ?? [];
+    await Promise.all(
+      active.map((p) =>
+        createDoseLog({
+          prescription: p.id,
+          was_taken: med === "taken",
+          actual_time: med === "taken" ? new Date().toISOString() : null,
+          notes: notes.trim() || null,
+        }),
+      ),
+    );
+    qc.invalidateQueries({ queryKey: ["dose-logs"] });
+    qc.invalidateQueries({ queryKey: ["prescriptions"] });
+
+    // Voice sample stays local until the FastAPI acoustic service is wired up.
+    const prev = JSON.parse(localStorage.getItem("neurotrack.voice") ?? "[]");
+    localStorage.setItem(
+      "neurotrack.voice",
+      JSON.stringify([{ at: new Date().toISOString(), voiceOk, userId: user?.id }, ...prev].slice(0, 30)),
+    );
     setSubmitted(true);
   };
+
 
   return (
     <div className="px-5 pb-6 pt-6">
