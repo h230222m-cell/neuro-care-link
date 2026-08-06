@@ -12,7 +12,7 @@ export const Route = createFileRoute("/clinician/patients/$id")({
       { property: "og:description", content: "Focused trend detail for a Cimas patient." },
     ],
   }),
-  loader: ({ params }) => {
+  loader: ({ params }): { patient: PatientSummary } => {
     const patient = roster.find((p) => p.id === params.id);
     if (!patient) throw notFound();
     return { patient };
