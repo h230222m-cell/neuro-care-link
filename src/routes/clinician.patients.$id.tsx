@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Sparkline } from "@/components/Sparkline";
-import { patientCheckins, roster, tierLabel } from "@/lib/mockData";
+import { patientCheckins, roster, tierLabel, type PatientSummary } from "@/lib/mockData";
 import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/clinician/patients/$id")({
