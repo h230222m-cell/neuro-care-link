@@ -98,3 +98,43 @@ export function daysSupplyRemaining(
 export function needsRefill(p: Prescription) {
   return p.days_supply_remaining <= p.refill_threshold_days;
 }
+
+// ---- Dose scheduling (derived from doses_per_day, mirrors the backend rate) ----
+
+/** Standard NeuroTrack dose slots; a prescription uses the first `doses_per_day`. */
+export const DOSE_SLOTS = ["08:00", "13:00", "18:00", "22:00"] as const;
+
+export function doseTimes(p: Pick<Prescription, "doses_per_day">): string[] {
+  return DOSE_SLOTS.slice(0, Math.max(1, Math.min(p.doses_per_day, DOSE_SLOTS.length)));
+}
+
+/** Next scheduled dose datetime for a prescription, relative to `from`. */
+export function nextDoseDue(p: Pick<Prescription, "doses_per_day">, from = new Date()): Date {
+  for (const slot of doseTimes(p)) {
+    const [h, m] = slot.split(":").map(Number);
+    const at = new Date(from);
+    at.setHours(h ?? 0, m ?? 0, 0, 0);
+    if (at.getTime() > from.getTime()) return at;
+  }
+  const [h, m] = (doseTimes(p)[0] ?? "08:00").split(":").map(Number);
+  const tomorrow = new Date(from);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(h ?? 8, m ?? 0, 0, 0);
+  return tomorrow;
+}
+
+/** A Tier-1 escalation row: a fall in SymptomDiary + the patient's dose context. */
+export interface FallEvent {
+  diary_id: number;
+  patient_id: number;
+  /** Roster id used by the clinician console routes. */
+  roster_id: string;
+  patient_name: string;
+  /** When the fall was recorded (SymptomDiary.timestamp). */
+  timestamp: string;
+  /** ISO datetime of the next dose the patient is due to take. */
+  next_dose_due: string;
+  medication_name: string;
+  dose_label: string;
+  patient_notes: string | null;
+}

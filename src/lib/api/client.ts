@@ -12,6 +12,8 @@ import {
   type Prescription,
   type RefillOrder,
   type RefillOrderCreate,
+  nextDoseDue,
+  type FallEvent,
   type SymptomDiary,
   type SymptomDiaryCreate,
 } from "./types";
@@ -93,7 +95,60 @@ const doseLogs: DoseComplianceLog[] = Array.from({ length: 21 }, (_, i) => {
   };
 });
 
-const symptomDiaries: SymptomDiary[] = [];
+// Patient directory — maps backend patient ids to the clinician roster ids.
+const patientDirectory = [
+  { patient_id: 1, roster_id: "p1", name: "Tendai Moyo", doses_per_day: 3, medication_name: "Levodopa / Carbidopa (Sinemet)", dose_label: "25mg / 100mg" },
+  { patient_id: 2, roster_id: "p2", name: "Grace Ncube", doses_per_day: 2, medication_name: "Levodopa / Carbidopa (Sinemet)", dose_label: "25mg / 100mg" },
+  { patient_id: 3, roster_id: "p3", name: "Farai Dube", doses_per_day: 3, medication_name: "Levodopa / Carbidopa (Sinemet)", dose_label: "25mg / 250mg" },
+  { patient_id: 5, roster_id: "p5", name: "Kudakwashe Banda", doses_per_day: 2, medication_name: "Selegiline", dose_label: "5mg" },
+];
+
+const symptomDiaries: SymptomDiary[] = [
+  {
+    id: 501,
+    patient_id: 1,
+    timestamp: iso(0, 6, 40),
+    tremor_severity: 4,
+    muscle_stiffness: 4,
+    slowness_of_movement: 4,
+    had_accidental_fall: true,
+    wearing_off_episode: true,
+    patient_notes: "Fell in the bathroom before the morning dose.",
+  },
+  {
+    id: 502,
+    patient_id: 3,
+    timestamp: iso(-1, 19, 5),
+    tremor_severity: 3,
+    muscle_stiffness: 3,
+    slowness_of_movement: 4,
+    had_accidental_fall: true,
+    wearing_off_episode: true,
+    patient_notes: "Lost balance standing up from a chair.",
+  },
+  {
+    id: 503,
+    patient_id: 2,
+    timestamp: iso(-2, 11, 20),
+    tremor_severity: 2,
+    muscle_stiffness: 3,
+    slowness_of_movement: 3,
+    had_accidental_fall: true,
+    wearing_off_episode: false,
+    patient_notes: null,
+  },
+  {
+    id: 504,
+    patient_id: 5,
+    timestamp: iso(-3, 9, 0),
+    tremor_severity: 2,
+    muscle_stiffness: 2,
+    slowness_of_movement: 2,
+    had_accidental_fall: false,
+    wearing_off_episode: false,
+    patient_notes: "Good day, no problems.",
+  },
+];
 
 let nextId = 1000;
 const delay = <T,>(value: T) => new Promise<T>((r) => setTimeout(() => r(value), 120));
@@ -181,4 +236,27 @@ export function adherenceFromLogs(logs: DoseComplianceLog[], days = 7) {
   const window = logs.filter((l) => new Date(l.scheduled_time).getTime() >= cutoff);
   if (window.length === 0) return 0;
   return window.filter((l) => l.was_taken).length / window.length;
+}
+
+// GET /api/symptom-diaries/?had_accidental_fall=true  (Tier-1 escalations only)
+export function listTier1FallEvents() {
+  const rows: FallEvent[] = symptomDiaries
+    .filter((s) => s.had_accidental_fall)
+    .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+    .map((s) => {
+      const patient = patientDirectory.find((p) => p.patient_id === s.patient_id);
+      const dosesPerDay = patient?.doses_per_day ?? 3;
+      return {
+        diary_id: s.id,
+        patient_id: s.patient_id,
+        roster_id: patient?.roster_id ?? `p${s.patient_id}`,
+        patient_name: patient?.name ?? `Patient #${s.patient_id}`,
+        timestamp: s.timestamp,
+        next_dose_due: nextDoseDue({ doses_per_day: dosesPerDay }).toISOString(),
+        medication_name: patient?.medication_name ?? "—",
+        dose_label: patient?.dose_label ?? "—",
+        patient_notes: s.patient_notes,
+      };
+    });
+  return delay(rows);
 }

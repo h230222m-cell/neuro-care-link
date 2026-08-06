@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { PatientTabBar } from "@/components/PatientTabBar";
 import { PatientSkeleton } from "@/components/patient/PatientSkeleton";
 import { PatientError } from "@/components/patient/PatientError";
+import { DoseReminder } from "@/components/patient/DoseReminder";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/app")({
@@ -33,6 +34,7 @@ function PatientShell() {
 
   return (
     <Shell>
+      <DoseReminder />
       <Outlet />
       <PatientTabBar />
     </Shell>
