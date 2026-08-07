@@ -26,7 +26,7 @@ function Home() {
     (patientCheckins.filter((c) => c.medTaken).length / patientCheckins.length) * 100,
   );
   const nextAppt = patientAppointments.find((a) => a.status === "scheduled");
-  const nextDose = patientMedications[0];
+  
 
   return (
     <div className="px-5 pb-6 pt-6">
