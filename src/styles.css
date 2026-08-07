@@ -48,20 +48,20 @@
 :root {
   --radius: 0.875rem;
 
-  /* Cimas warm blue on a soft off-white */
-  --background: oklch(0.985 0.006 240);
-  --foreground: oklch(0.22 0.035 250);
+  /* Cimas blue on a clean, near-white grey */
+  --background: oklch(0.982 0.004 250);
+  --foreground: oklch(0.2 0.03 255);
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.035 250);
+  --card-foreground: oklch(0.2 0.03 255);
 
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.035 250);
+  --popover-foreground: oklch(0.2 0.03 255);
 
-  --primary: oklch(0.52 0.14 250);         /* Cimas blue */
+  --primary: oklch(0.5 0.15 255);          /* Cimas blue */
   --primary-foreground: oklch(0.99 0.005 250);
-  --primary-soft: oklch(0.94 0.03 250);    /* tinted surface */
-  --primary-glow: oklch(0.66 0.15 245);
+  --primary-soft: oklch(0.955 0.025 255);  /* tinted surface */
+  --primary-glow: oklch(0.64 0.16 250);
 
   --secondary: oklch(0.96 0.01 250);
   --secondary-foreground: oklch(0.28 0.04 250);

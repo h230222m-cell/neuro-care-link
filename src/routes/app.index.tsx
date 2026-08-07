@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Logo } from "@/components/Logo";
 import { Sparkline } from "@/components/Sparkline";
+import { NextDoseTimer } from "@/components/patient/NextDoseTimer";
 import { useAuth } from "@/lib/auth";
-import { patientCheckins, patientMedications, patientAppointments, fmtRelative } from "@/lib/mockData";
+import { patientCheckins, patientAppointments, fmtRelative } from "@/lib/mockData";
 import { Mic, Pill, ChevronRight, CalendarClock } from "lucide-react";
 
 export const Route = createFileRoute("/app/")({
@@ -25,7 +26,7 @@ function Home() {
     (patientCheckins.filter((c) => c.medTaken).length / patientCheckins.length) * 100,
   );
   const nextAppt = patientAppointments.find((a) => a.status === "scheduled");
-  const nextDose = patientMedications[0];
+  
 
   return (
     <div className="px-5 pb-6 pt-6">
@@ -97,25 +98,10 @@ function Home() {
         </div>
       </section>
 
-      {/* Next dose & appointment */}
+      {/* Next dose timer & appointment */}
       <section className="mt-4 space-y-3">
-        <Link
-          to="/app/meds"
-          className="surface-card flex items-center gap-4 p-4 transition hover:bg-primary-soft/30"
-        >
-          <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary-soft text-primary">
-            <Pill className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-display text-sm font-semibold text-foreground">
-              Next dose · {nextDose.name}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {nextDose.dose} · {fmtRelative(nextDose.nextDue)}
-            </p>
-          </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </Link>
+        <NextDoseTimer />
+
 
         {nextAppt && (
           <Link
