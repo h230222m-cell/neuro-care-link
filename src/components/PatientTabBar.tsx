@@ -1,9 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Pill, LineChart, Calendar, User } from "lucide-react";
+import { Home, Pill, LineChart, NotebookPen, Calendar, User } from "lucide-react";
 
 const tabs: Array<{ to: string; label: string; icon: typeof Home; exact?: boolean }> = [
   { to: "/app", label: "Home", icon: Home, exact: true },
   { to: "/app/meds", label: "Meds", icon: Pill },
+  { to: "/app/diary", label: "Diary", icon: NotebookPen },
   { to: "/app/history", label: "Voice", icon: LineChart },
   { to: "/app/care", label: "Visits", icon: Calendar },
   { to: "/app/profile", label: "Me", icon: User },
@@ -29,7 +30,7 @@ export function PatientTabBar() {
                 }`}
               >
                 <span
-                  className={`grid h-8 w-14 place-items-center rounded-full transition ${
+                  className={`grid h-8 w-11 place-items-center rounded-full transition ${
                     active ? "bg-primary-soft" : "bg-transparent"
                   }`}
                 >

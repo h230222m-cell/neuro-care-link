@@ -16,6 +16,8 @@ import {
   type FallEvent,
   type SymptomDiary,
   type SymptomDiaryCreate,
+  type ClinicianNote,
+  type ClinicianNoteCreate,
 } from "./types";
 
 export const API_BASE_URL = import.meta.env["VITE_API_BASE_URL"] ?? "";
@@ -259,4 +261,66 @@ export function listTier1FallEvents() {
       };
     });
   return delay(rows);
+}
+
+// ---- Symptom diary (clinician view) + clinician notes ----
+
+const clinicianNotes: ClinicianNote[] = [
+  {
+    id: 901,
+    diary: 501,
+    patient_id: 1,
+    clinician_name: "Dr. T. Chikafu",
+    note: "Saw the fall log. Please take the morning dose before getting out of bed and use the walking frame in the bathroom. Reviewing at your next visit.",
+    visible_to_patient: true,
+    created_at: iso(0, 9, 30),
+  },
+  {
+    id: 902,
+    diary: 502,
+    patient_id: 3,
+    clinician_name: "Sr. M. Nyoni",
+    note: "Called the family. Advised sitting for a minute before standing. Monitoring wearing-off pattern.",
+    visible_to_patient: true,
+    created_at: iso(-1, 20, 10),
+  },
+];
+
+/** Patient display name for a backend patient_id. */
+export function patientName(patientId: number) {
+  return (
+    patientDirectory.find((p) => p.patient_id === patientId)?.name ?? `Patient #${patientId}`
+  );
+}
+
+// GET /api/symptom-diaries/  (all patients — clinician console)
+export function listAllSymptomDiaries() {
+  return delay(
+    [...symptomDiaries].sort((a, b) => b.timestamp.localeCompare(a.timestamp)),
+  );
+}
+
+// GET /api/clinician-notes/?patient_id=&diary=
+export function listClinicianNotes(opts: { patientId?: number; diaryId?: number } = {}) {
+  return delay(
+    clinicianNotes
+      .filter((n) => (opts.patientId == null ? true : n.patient_id === opts.patientId))
+      .filter((n) => (opts.diaryId == null ? true : n.diary === opts.diaryId))
+      .sort((a, b) => b.created_at.localeCompare(a.created_at)),
+  );
+}
+
+// POST /api/clinician-notes/
+export function createClinicianNote(payload: ClinicianNoteCreate) {
+  const note: ClinicianNote = {
+    id: nextId++,
+    diary: payload.diary,
+    patient_id: payload.patient_id,
+    clinician_name: payload.clinician_name ?? "Care team",
+    note: payload.note,
+    visible_to_patient: payload.visible_to_patient ?? true,
+    created_at: new Date().toISOString(),
+  };
+  clinicianNotes.unshift(note);
+  return delay(note);
 }

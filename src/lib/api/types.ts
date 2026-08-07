@@ -138,3 +138,28 @@ export interface FallEvent {
   dose_label: string;
   patient_notes: string | null;
 }
+
+// ---- Clinician notes attached to a symptom diary entry ----
+
+/** neurotrack_cliniciannote — a clinician reply on a patient's diary entry. */
+export interface ClinicianNote {
+  id: number;
+  diary: number; // FK -> SymptomDiary.id
+  patient_id: number;
+  clinician_name: string;
+  note: string;
+  /** When true the patient sees this note in their diary (transparency). */
+  visible_to_patient: boolean;
+  created_at: string; // ISO datetime
+}
+
+export type ClinicianNoteCreate = Pick<ClinicianNote, "diary" | "patient_id" | "note"> &
+  Partial<Pick<ClinicianNote, "clinician_name" | "visible_to_patient">>;
+
+export const SYMPTOM_SCALE_LABEL: Record<number, string> = {
+  1: "None",
+  2: "Mild",
+  3: "Moderate",
+  4: "Severe",
+  5: "Very severe",
+};

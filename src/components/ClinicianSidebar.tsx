@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Users, Bell, BarChart3, LogOut } from "lucide-react";
+import { Users, Bell, BarChart3, NotebookPen, LogOut } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
 import { useNavigate } from "@tanstack/react-router";
@@ -8,6 +8,7 @@ import { alerts } from "@/lib/mockData";
 const items: Array<{ to: string; label: string; icon: typeof Users; exact?: boolean }> = [
   { to: "/clinician", label: "Roster", icon: Users, exact: true },
   { to: "/clinician/alerts", label: "Alerts", icon: Bell },
+  { to: "/clinician/diaries", label: "Diaries", icon: NotebookPen },
   { to: "/clinician/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
