@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Logo } from "@/components/Logo";
 import { Sparkline } from "@/components/Sparkline";
+import { NextDoseTimer } from "@/components/patient/NextDoseTimer";
 import { useAuth } from "@/lib/auth";
-import { patientCheckins, patientMedications, patientAppointments, fmtRelative } from "@/lib/mockData";
+import { patientCheckins, patientAppointments, fmtRelative } from "@/lib/mockData";
 import { Mic, Pill, ChevronRight, CalendarClock } from "lucide-react";
 
 export const Route = createFileRoute("/app/")({
