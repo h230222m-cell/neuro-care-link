@@ -21,7 +21,7 @@ export const Route = createFileRoute("/clinician/patients/$id")({
 });
 
 function PatientDetail() {
-  const { patient } = Route.useLoaderData();
+  const { patient } = Route.useLoaderData() as { patient: PatientSummary };
   const checkins = patientCheckins; // shared demo timeline
   const adherence = Math.round(patient.adherence7d * 100);
 
