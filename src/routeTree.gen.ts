@@ -20,6 +20,7 @@ import { Route as ClinicianAlertsRouteImport } from './routes/clinician.alerts'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppMedsRouteImport } from './routes/app.meds'
 import { Route as AppHistoryRouteImport } from './routes/app.history'
+import { Route as AppDiaryRouteImport } from './routes/app.diary'
 import { Route as AppCheckinRouteImport } from './routes/app.checkin'
 import { Route as AppCareRouteImport } from './routes/app.care'
 import { Route as ClinicianPatientsIdRouteImport } from './routes/clinician.patients.$id'
@@ -79,6 +80,11 @@ const AppHistoryRoute = AppHistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDiaryRoute = AppDiaryRouteImport.update({
+  id: '/diary',
+  path: '/diary',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCheckinRoute = AppCheckinRouteImport.update({
   id: '/checkin',
   path: '/checkin',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/clinician': typeof ClinicianRouteWithChildren
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
+  '/app/diary': typeof AppDiaryRoute
   '/app/history': typeof AppHistoryRoute
   '/app/meds': typeof AppMedsRoute
   '/app/profile': typeof AppProfileRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
+  '/app/diary': typeof AppDiaryRoute
   '/app/history': typeof AppHistoryRoute
   '/app/meds': typeof AppMedsRoute
   '/app/profile': typeof AppProfileRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/clinician': typeof ClinicianRouteWithChildren
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
+  '/app/diary': typeof AppDiaryRoute
   '/app/history': typeof AppHistoryRoute
   '/app/meds': typeof AppMedsRoute
   '/app/profile': typeof AppProfileRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/clinician'
     | '/app/care'
     | '/app/checkin'
+    | '/app/diary'
     | '/app/history'
     | '/app/meds'
     | '/app/profile'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/app/care'
     | '/app/checkin'
+    | '/app/diary'
     | '/app/history'
     | '/app/meds'
     | '/app/profile'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/clinician'
     | '/app/care'
     | '/app/checkin'
+    | '/app/diary'
     | '/app/history'
     | '/app/meds'
     | '/app/profile'
@@ -277,6 +289,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHistoryRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/diary': {
+      id: '/app/diary'
+      path: '/diary'
+      fullPath: '/app/diary'
+      preLoaderRoute: typeof AppDiaryRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/checkin': {
       id: '/app/checkin'
       path: '/checkin'
@@ -304,6 +323,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppCareRoute: typeof AppCareRoute
   AppCheckinRoute: typeof AppCheckinRoute
+  AppDiaryRoute: typeof AppDiaryRoute
   AppHistoryRoute: typeof AppHistoryRoute
   AppMedsRoute: typeof AppMedsRoute
   AppProfileRoute: typeof AppProfileRoute
@@ -313,6 +333,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppCareRoute: AppCareRoute,
   AppCheckinRoute: AppCheckinRoute,
+  AppDiaryRoute: AppDiaryRoute,
   AppHistoryRoute: AppHistoryRoute,
   AppMedsRoute: AppMedsRoute,
   AppProfileRoute: AppProfileRoute,
