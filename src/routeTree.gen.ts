@@ -15,6 +15,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ClinicianIndexRouteImport } from './routes/clinician.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as ClinicianDiariesRouteImport } from './routes/clinician.diaries'
 import { Route as ClinicianAnalyticsRouteImport } from './routes/clinician.analytics'
 import { Route as ClinicianAlertsRouteImport } from './routes/clinician.alerts'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
@@ -54,6 +55,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const ClinicianDiariesRoute = ClinicianDiariesRouteImport.update({
+  id: '/diaries',
+  path: '/diaries',
+  getParentRoute: () => ClinicianRoute,
 } as any)
 const ClinicianAnalyticsRoute = ClinicianAnalyticsRouteImport.update({
   id: '/analytics',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/app/profile': typeof AppProfileRoute
   '/clinician/alerts': typeof ClinicianAlertsRoute
   '/clinician/analytics': typeof ClinicianAnalyticsRoute
+  '/clinician/diaries': typeof ClinicianDiariesRoute
   '/app/': typeof AppIndexRoute
   '/clinician/': typeof ClinicianIndexRoute
   '/clinician/patients/$id': typeof ClinicianPatientsIdRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/app/profile': typeof AppProfileRoute
   '/clinician/alerts': typeof ClinicianAlertsRoute
   '/clinician/analytics': typeof ClinicianAnalyticsRoute
+  '/clinician/diaries': typeof ClinicianDiariesRoute
   '/app': typeof AppIndexRoute
   '/clinician': typeof ClinicianIndexRoute
   '/clinician/patients/$id': typeof ClinicianPatientsIdRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/app/profile': typeof AppProfileRoute
   '/clinician/alerts': typeof ClinicianAlertsRoute
   '/clinician/analytics': typeof ClinicianAnalyticsRoute
+  '/clinician/diaries': typeof ClinicianDiariesRoute
   '/app/': typeof AppIndexRoute
   '/clinician/': typeof ClinicianIndexRoute
   '/clinician/patients/$id': typeof ClinicianPatientsIdRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/app/profile'
     | '/clinician/alerts'
     | '/clinician/analytics'
+    | '/clinician/diaries'
     | '/app/'
     | '/clinician/'
     | '/clinician/patients/$id'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/app/profile'
     | '/clinician/alerts'
     | '/clinician/analytics'
+    | '/clinician/diaries'
     | '/app'
     | '/clinician'
     | '/clinician/patients/$id'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/app/profile'
     | '/clinician/alerts'
     | '/clinician/analytics'
+    | '/clinician/diaries'
     | '/app/'
     | '/clinician/'
     | '/clinician/patients/$id'
@@ -253,6 +265,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/clinician/diaries': {
+      id: '/clinician/diaries'
+      path: '/diaries'
+      fullPath: '/clinician/diaries'
+      preLoaderRoute: typeof ClinicianDiariesRouteImport
+      parentRoute: typeof ClinicianRoute
     }
     '/clinician/analytics': {
       id: '/clinician/analytics'
@@ -345,6 +364,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 interface ClinicianRouteChildren {
   ClinicianAlertsRoute: typeof ClinicianAlertsRoute
   ClinicianAnalyticsRoute: typeof ClinicianAnalyticsRoute
+  ClinicianDiariesRoute: typeof ClinicianDiariesRoute
   ClinicianIndexRoute: typeof ClinicianIndexRoute
   ClinicianPatientsIdRoute: typeof ClinicianPatientsIdRoute
 }
@@ -352,6 +372,7 @@ interface ClinicianRouteChildren {
 const ClinicianRouteChildren: ClinicianRouteChildren = {
   ClinicianAlertsRoute: ClinicianAlertsRoute,
   ClinicianAnalyticsRoute: ClinicianAnalyticsRoute,
+  ClinicianDiariesRoute: ClinicianDiariesRoute,
   ClinicianIndexRoute: ClinicianIndexRoute,
   ClinicianPatientsIdRoute: ClinicianPatientsIdRoute,
 }
