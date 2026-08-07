@@ -97,25 +97,10 @@ function Home() {
         </div>
       </section>
 
-      {/* Next dose & appointment */}
+      {/* Next dose timer & appointment */}
       <section className="mt-4 space-y-3">
-        <Link
-          to="/app/meds"
-          className="surface-card flex items-center gap-4 p-4 transition hover:bg-primary-soft/30"
-        >
-          <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary-soft text-primary">
-            <Pill className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-display text-sm font-semibold text-foreground">
-              Next dose · {nextDose.name}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {nextDose.dose} · {fmtRelative(nextDose.nextDue)}
-            </p>
-          </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </Link>
+        <NextDoseTimer />
+
 
         {nextAppt && (
           <Link
