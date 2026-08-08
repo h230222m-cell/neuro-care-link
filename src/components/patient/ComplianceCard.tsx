@@ -35,7 +35,7 @@ export function ComplianceCard({
   const TrendIcon = trendPts > 0 ? TrendingUp : trendPts < 0 ? TrendingDown : Minus;
   const bandTone =
     risk.band === "on-track"
-      ? "bg-success-soft text-success-foreground"
+      ? "bg-success/15 text-success"
       : risk.band === "watch"
         ? "bg-warning/15 text-warning-foreground"
         : "bg-destructive/10 text-destructive";
