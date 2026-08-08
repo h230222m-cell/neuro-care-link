@@ -2,7 +2,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { usePreferences, type FontScale } from "@/lib/preferences";
-import { Bell, Globe, Shield, LogOut, HeartPulse, ChevronRight, Type } from "lucide-react";
+import { Bell, Globe, Shield, LogOut, HeartPulse, ChevronRight, Type, Clock } from "lucide-react";
+import { DOSE_SLOT_META, type DoseSlotKey } from "@/lib/dose-schedule";
+import { useDoseSchedule } from "@/lib/use-dose-schedule";
 
 export const Route = createFileRoute("/app/profile")({
   head: () => ({
@@ -19,6 +21,8 @@ export const Route = createFileRoute("/app/profile")({
 function Profile() {
   const { user, signOut } = useAuth();
   const { fontScale, setFontScale } = usePreferences();
+  const { schedule, update } = useDoseSchedule();
+  const [saved, setSaved] = useState<DoseSlotKey | null>(null);
   const navigate = useNavigate();
   const [lang, setLang] = useState<"English" | "Shona" | "Ndebele">("English");
   const [remind, setRemind] = useState(true);
