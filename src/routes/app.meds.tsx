@@ -66,7 +66,8 @@ function Meds() {
           const pending = refills.data?.find(
             (r) => r.prescription === p.id && r.status !== "COMPLETED" && r.status !== "CANCELLED",
           );
-          const pctLeft = Math.round((p.current_pill_count / p.total_dispensed_pills) * 100);
+          const f = supplyForecast(p);
+          const pctLeft = Math.round(f.bottleFraction * 100);
           return (
             <article key={p.id} className="surface-card p-5">
               <div className="flex items-start gap-4">
@@ -82,32 +83,32 @@ function Meds() {
                 </div>
                 <div className="text-right">
                   <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Daily rate</p>
-                  <p className="font-display text-sm font-semibold">{p.daily_dose_rate} pills</p>
+                  <p className="font-display text-sm font-semibold tabular-nums">{f.dailyRate} pills</p>
                 </div>
               </div>
 
               {/* Pill inventory bar */}
               <div className="mt-4">
                 <div className="flex items-baseline justify-between text-xs">
-                  <span className="text-muted-foreground">Bottle</span>
-                  <span className="font-semibold text-foreground">
+                  <span className="text-muted-foreground">Bottle · {pctLeft}%</span>
+                  <span className="font-semibold tabular-nums text-foreground">
                     {p.current_pill_count} / {p.total_dispensed_pills} pills
                   </span>
                 </div>
                 <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted">
                   <div
-                    className={`h-full rounded-full ${low ? "bg-warning" : "bg-primary"}`}
+                    className={`h-full rounded-full transition-all ${low ? "bg-warning" : "bg-primary"}`}
                     style={{ width: `${Math.max(2, pctLeft)}%` }}
                   />
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+              <div className="mt-4 grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
                 <div className="rounded-lg bg-muted/60 px-3 py-2.5">
                   <div className="flex items-center gap-1.5 text-muted-foreground">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Compliance 7d
                   </div>
-                  <div className="mt-1 font-semibold text-foreground">
+                  <div className="mt-1 font-semibold tabular-nums text-foreground">
                     {Math.round(adherenceFromLogs(logs.filter((l) => l.prescription === p.id), 7) * 100)}%
                   </div>
                 </div>
@@ -116,11 +117,34 @@ function Meds() {
                     {low ? <AlertTriangle className="h-3.5 w-3.5 text-warning-foreground" /> : <PackageOpen className="h-3.5 w-3.5" />}
                     Supply
                   </div>
-                  <div className={`mt-1 font-semibold ${low ? "text-warning-foreground" : "text-foreground"}`}>
-                    {p.days_supply_remaining} days left
+                  <div className={`mt-1 font-semibold tabular-nums ${low ? "text-warning-foreground" : "text-foreground"}`}>
+                    {f.daysRemaining} days left
+                  </div>
+                </div>
+                <div className="rounded-lg bg-muted/60 px-3 py-2.5">
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <CalendarClock className="h-3.5 w-3.5" /> Runs out
+                  </div>
+                  <div className="mt-1 font-semibold tabular-nums text-foreground">
+                    {fmtDate(f.runoutDate)}
+                  </div>
+                </div>
+                <div className="rounded-lg bg-muted/60 px-3 py-2.5">
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <Truck className="h-3.5 w-3.5" /> Refill by
+                  </div>
+                  <div className="mt-1 font-semibold tabular-nums text-foreground">
+                    {fmtDate(f.refillDate)}
                   </div>
                 </div>
               </div>
+
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                MPR {f.mpr.toFixed(2)} · consumption variance{" "}
+                {f.consumptionVariance > 0 ? "+" : ""}
+                {f.consumptionVariance} pills vs prescribed rate
+              </p>
+
 
               {pending ? (
                 <div className="mt-3 flex items-center gap-2 rounded-lg bg-primary-soft px-3 py-2.5 text-xs text-primary">
