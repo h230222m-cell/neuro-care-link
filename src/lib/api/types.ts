@@ -3,6 +3,10 @@
 // serialize them, so wiring to the real API is a drop-in swap of the
 // functions in ./client.ts — no shape translation needed.
 
+import { getDoseSlots } from "../dose-schedule";
+
+
+
 export type RefillStatus =
   | "AUTO_GENERATED"
   | "APPROVED"
