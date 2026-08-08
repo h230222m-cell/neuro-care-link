@@ -4,6 +4,7 @@ import { BellRing, Check, Clock, X } from "lucide-react";
 import { createDoseLog, listDoseLogs, listPrescriptions } from "@/lib/api/client";
 import { doseTimes, type Prescription } from "@/lib/api/types";
 import { buildSchedule, countdown, fmtClock, slotDate, upcomingDoses } from "@/lib/dose-timers";
+import { useDoseSchedule } from "@/lib/use-dose-schedule";
 
 type DueDose = {
   key: string;
@@ -24,6 +25,7 @@ export function DoseReminder() {
   const [dismissed, setDismissed] = useState<string[]>([]);
   const [permission, setPermission] = useState<NotificationPermission | "unsupported">("default");
   const fired = useRef<Set<string>>(new Set());
+  const { schedule } = useDoseSchedule();
 
   const prescriptions = useQuery({ queryKey: ["prescriptions"], queryFn: () => listPrescriptions() });
   const doseLogs = useQuery({ queryKey: ["dose-logs"], queryFn: () => listDoseLogs() });
@@ -82,7 +84,7 @@ export function DoseReminder() {
         }, Math.max(0, ms));
       });
     return () => timers.forEach(clearTimeout);
-  }, [permission, rows]);
+  }, [permission, rows, schedule]);
 
   const logDose = useMutation({
     mutationFn: (prescription: number) => createDoseLog({ prescription, was_taken: true }),
