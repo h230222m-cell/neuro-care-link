@@ -20,6 +20,10 @@ import {
   type ClinicianNoteCreate,
 } from "./types";
 
+import { DEFAULT_DOSE_SCHEDULE, type DoseSchedule } from "../dose-schedule";
+
+let doseScheduleStore: DoseSchedule = { ...DEFAULT_DOSE_SCHEDULE };
+
 export const API_BASE_URL = import.meta.env["VITE_API_BASE_URL"] ?? "";
 
 const DEMO_PATIENT_ID = 1;
@@ -323,4 +327,16 @@ export function createClinicianNote(payload: ClinicianNoteCreate) {
   };
   clinicianNotes.unshift(note);
   return delay(note);
+}
+
+// PATCH /api/dose-schedule/  — persists the patient's morning/afternoon/evening/night
+// pill times. Mocked locally until the Django endpoint is wired up.
+export function saveDoseSchedule(schedule: DoseSchedule, patientId = DEMO_PATIENT_ID) {
+  doseScheduleStore = { ...schedule };
+  return delay({ patient_id: patientId, ...doseScheduleStore });
+}
+
+// GET /api/dose-schedule/
+export function getRemoteDoseSchedule(patientId = DEMO_PATIENT_ID) {
+  return delay({ patient_id: patientId, ...doseScheduleStore });
 }

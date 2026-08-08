@@ -2,7 +2,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { usePreferences, type FontScale } from "@/lib/preferences";
-import { Bell, Globe, Shield, LogOut, HeartPulse, ChevronRight, Type } from "lucide-react";
+import { Bell, Globe, Shield, LogOut, HeartPulse, ChevronRight, Type, Clock } from "lucide-react";
+import { DOSE_SLOT_META, type DoseSlotKey } from "@/lib/dose-schedule";
+import { useDoseSchedule } from "@/lib/use-dose-schedule";
 
 export const Route = createFileRoute("/app/profile")({
   head: () => ({
@@ -19,6 +21,8 @@ export const Route = createFileRoute("/app/profile")({
 function Profile() {
   const { user, signOut } = useAuth();
   const { fontScale, setFontScale } = usePreferences();
+  const { schedule, update } = useDoseSchedule();
+  const [saved, setSaved] = useState<DoseSlotKey | null>(null);
   const navigate = useNavigate();
   const [lang, setLang] = useState<"English" | "Shona" | "Ndebele">("English");
   const [remind, setRemind] = useState(true);
@@ -100,6 +104,52 @@ function Profile() {
           </div>
         </div>
       </section>
+
+      <section className="mt-5">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pill timers</h2>
+        <div className="surface-card mt-2 p-4">
+          <div className="flex items-center gap-3">
+            <div className="grid h-8 w-8 flex-none place-items-center rounded-lg bg-primary-soft text-primary">
+              <Clock className="h-4 w-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-foreground">Dose times</p>
+              <p className="text-xs text-muted-foreground">
+                We'll notify you in the app at each time you set
+              </p>
+            </div>
+          </div>
+          <div className="mt-3 divide-y divide-border">
+            {DOSE_SLOT_META.map((slot) => (
+              <div key={slot.key} className="flex items-center gap-3 py-2.5">
+                <p className="min-w-0 flex-1 text-sm text-foreground">{slot.label}</p>
+                <input
+                  type="time"
+                  aria-label={`${slot.label} dose time`}
+                  value={schedule[slot.field]}
+                  onChange={(e) => {
+                    if (!e.target.value) return;
+                    update({ [slot.field]: e.target.value });
+                    setSaved(slot.key);
+                  }}
+                  className="rounded-lg border border-input bg-background px-2.5 py-1.5 text-sm font-semibold tabular-nums text-foreground"
+                />
+                <span
+                  className={`w-10 text-[10px] font-semibold uppercase tracking-wide text-primary transition-opacity ${
+                    saved === slot.key ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  Saved
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            Each prescription uses the first times in this list, based on how many doses a day it needs.
+          </p>
+        </div>
+      </section>
+
 
       <section className="mt-5">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Preferences</h2>
