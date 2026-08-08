@@ -329,14 +329,49 @@ export function createClinicianNote(payload: ClinicianNoteCreate) {
   return delay(note);
 }
 
-// PATCH /api/dose-schedule/  — persists the patient's morning/afternoon/evening/night
-// pill times. Mocked locally until the Django endpoint is wired up.
-export function saveDoseSchedule(schedule: DoseSchedule, patientId = DEMO_PATIENT_ID) {
-  doseScheduleStore = { ...schedule };
-  return delay({ patient_id: patientId, ...doseScheduleStore });
+// ---- Dose schedule API ------------------------------------------------------
+// Talks to the app's own /api/dose-schedule endpoint (see
+// src/routes/api/dose-schedule.ts). Point API_BASE_URL at Django later and the
+// same two calls hit /api/dose-schedule/ there.
+
+export interface DoseSchedulePayload extends DoseSchedule {
+  patient_id: number;
 }
 
-// GET /api/dose-schedule/
-export function getRemoteDoseSchedule(patientId = DEMO_PATIENT_ID) {
-  return delay({ patient_id: patientId, ...doseScheduleStore });
+const scheduleUrl = (patientId?: number) =>
+  `${API_BASE_URL}/api/dose-schedule${patientId != null ? `?patient_id=${patientId}` : ""}`;
+
+// PATCH /api/dose-schedule — persists the patient's morning/afternoon/evening/night times.
+export async function saveDoseSchedule(schedule: DoseSchedule, patientId = DEMO_PATIENT_ID) {
+  doseScheduleStore = { ...schedule };
+  try {
+    const res = await fetch(scheduleUrl(), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ patient_id: patientId, ...schedule }),
+    });
+    if (!res.ok) throw new Error(`PATCH /api/dose-schedule ${res.status}`);
+    return (await res.json()) as DoseSchedulePayload;
+  } catch {
+    // Offline-first: the local store already holds the change.
+    return { patient_id: patientId, ...doseScheduleStore } satisfies DoseSchedulePayload;
+  }
+}
+
+// GET /api/dose-schedule
+export async function getRemoteDoseSchedule(patientId = DEMO_PATIENT_ID) {
+  try {
+    const res = await fetch(scheduleUrl(patientId));
+    if (!res.ok) throw new Error(`GET /api/dose-schedule ${res.status}`);
+    const data = (await res.json()) as DoseSchedulePayload;
+    doseScheduleStore = {
+      morning_time: data.morning_time,
+      afternoon_time: data.afternoon_time,
+      evening_time: data.evening_time,
+      night_time: data.night_time,
+    };
+    return data;
+  } catch {
+    return { patient_id: patientId, ...doseScheduleStore } satisfies DoseSchedulePayload;
+  }
 }

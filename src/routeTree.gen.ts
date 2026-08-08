@@ -24,6 +24,7 @@ import { Route as AppHistoryRouteImport } from './routes/app.history'
 import { Route as AppDiaryRouteImport } from './routes/app.diary'
 import { Route as AppCheckinRouteImport } from './routes/app.checkin'
 import { Route as AppCareRouteImport } from './routes/app.care'
+import { Route as ApiDoseScheduleRouteImport } from './routes/api/dose-schedule'
 import { Route as ClinicianPatientsIdRouteImport } from './routes/clinician.patients.$id'
 
 const ClinicianRoute = ClinicianRouteImport.update({
@@ -101,6 +102,11 @@ const AppCareRoute = AppCareRouteImport.update({
   path: '/care',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiDoseScheduleRoute = ApiDoseScheduleRouteImport.update({
+  id: '/api/dose-schedule',
+  path: '/api/dose-schedule',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClinicianPatientsIdRoute = ClinicianPatientsIdRouteImport.update({
   id: '/patients/$id',
   path: '/patients/$id',
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/clinician': typeof ClinicianRouteWithChildren
+  '/api/dose-schedule': typeof ApiDoseScheduleRoute
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
   '/app/diary': typeof AppDiaryRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/api/dose-schedule': typeof ApiDoseScheduleRoute
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
   '/app/diary': typeof AppDiaryRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/clinician': typeof ClinicianRouteWithChildren
+  '/api/dose-schedule': typeof ApiDoseScheduleRoute
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
   '/app/diary': typeof AppDiaryRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/auth'
     | '/clinician'
+    | '/api/dose-schedule'
     | '/app/care'
     | '/app/checkin'
     | '/app/diary'
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/api/dose-schedule'
     | '/app/care'
     | '/app/checkin'
     | '/app/diary'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/auth'
     | '/clinician'
+    | '/api/dose-schedule'
     | '/app/care'
     | '/app/checkin'
     | '/app/diary'
@@ -220,6 +232,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
   ClinicianRoute: typeof ClinicianRouteWithChildren
+  ApiDoseScheduleRoute: typeof ApiDoseScheduleRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -329,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCareRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/dose-schedule': {
+      id: '/api/dose-schedule'
+      path: '/api/dose-schedule'
+      fullPath: '/api/dose-schedule'
+      preLoaderRoute: typeof ApiDoseScheduleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/clinician/patients/$id': {
       id: '/clinician/patients/$id'
       path: '/patients/$id'
@@ -386,17 +406,8 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
   ClinicianRoute: ClinicianRouteWithChildren,
+  ApiDoseScheduleRoute: ApiDoseScheduleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
