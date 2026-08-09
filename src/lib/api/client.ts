@@ -21,6 +21,7 @@ import {
 } from "./types";
 
 import { DEFAULT_DOSE_SCHEDULE, type DoseSchedule } from "../dose-schedule";
+import { fetchJsonWithRetry } from "./http";
 
 let doseScheduleStore: DoseSchedule = { ...DEFAULT_DOSE_SCHEDULE };
 
