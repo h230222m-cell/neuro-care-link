@@ -21,6 +21,7 @@ import {
 } from "./types";
 
 import { DEFAULT_DOSE_SCHEDULE, type DoseSchedule } from "../dose-schedule";
+import { fetchJsonWithRetry } from "./http";
 
 let doseScheduleStore: DoseSchedule = { ...DEFAULT_DOSE_SCHEDULE };
 
@@ -332,46 +333,84 @@ export function createClinicianNote(payload: ClinicianNoteCreate) {
 // ---- Dose schedule API ------------------------------------------------------
 // Talks to the app's own /api/dose-schedule endpoint (see
 // src/routes/api/dose-schedule.ts). Point API_BASE_URL at Django later and the
-// same two calls hit /api/dose-schedule/ there.
+// same two calls hit /api/dose-schedule/ there. Both calls retry with backoff
+// and fall back to the last known local copy so reminders never stall offline.
 
 export interface DoseSchedulePayload extends DoseSchedule {
   patient_id: number;
+  /** Server clock at the time of the response — used to detect drift. */
+  server_time?: string;
 }
 
 const scheduleUrl = (patientId?: number) =>
   `${API_BASE_URL}/api/dose-schedule${patientId != null ? `?patient_id=${patientId}` : ""}`;
 
-// PATCH /api/dose-schedule — persists the patient's morning/afternoon/evening/night times.
+const localSchedulePayload = (patientId: number): DoseSchedulePayload => ({
+  patient_id: patientId,
+  ...doseScheduleStore,
+});
+
+// PATCH /api/dose-schedule — persists the times + the patient's timezone.
 export async function saveDoseSchedule(schedule: DoseSchedule, patientId = DEMO_PATIENT_ID) {
   doseScheduleStore = { ...schedule };
   try {
-    const res = await fetch(scheduleUrl(), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ patient_id: patientId, ...schedule }),
-    });
-    if (!res.ok) throw new Error(`PATCH /api/dose-schedule ${res.status}`);
-    return (await res.json()) as DoseSchedulePayload;
+    return await fetchJsonWithRetry<DoseSchedulePayload>(
+      scheduleUrl(),
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ patient_id: patientId, ...schedule }),
+      },
+      { attempts: 4, backoffMs: 500 },
+    );
   } catch {
     // Offline-first: the local store already holds the change.
-    return { patient_id: patientId, ...doseScheduleStore } satisfies DoseSchedulePayload;
+    return localSchedulePayload(patientId);
   }
 }
 
 // GET /api/dose-schedule
 export async function getRemoteDoseSchedule(patientId = DEMO_PATIENT_ID) {
   try {
-    const res = await fetch(scheduleUrl(patientId));
-    if (!res.ok) throw new Error(`GET /api/dose-schedule ${res.status}`);
-    const data = (await res.json()) as DoseSchedulePayload;
+    const data = await fetchJsonWithRetry<DoseSchedulePayload>(
+      scheduleUrl(patientId),
+      undefined,
+      { attempts: 3, backoffMs: 400 },
+    );
     doseScheduleStore = {
       morning_time: data.morning_time,
       afternoon_time: data.afternoon_time,
       evening_time: data.evening_time,
       night_time: data.night_time,
+      timezone: data.timezone || doseScheduleStore.timezone,
     };
     return data;
   } catch {
-    return { patient_id: patientId, ...doseScheduleStore } satisfies DoseSchedulePayload;
+    return localSchedulePayload(patientId);
   }
+}
+
+// ---- Reminder delivery receipts --------------------------------------------
+// POST /api/reminder-deliveries — confirms a reminder actually reached the
+// patient's device, so clinicians can tell "missed dose" from "never notified".
+
+export async function ackReminderDelivery(record: {
+  id: string;
+  prescription_id: number;
+  scheduled_at: string;
+  delivered_at: string | null;
+  channel: string;
+  status: string;
+  attempts: number;
+  timezone: string;
+}) {
+  return fetchJsonWithRetry<{ ok: true; id: string }>(
+    `${API_BASE_URL}/api/reminder-deliveries`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ patient_id: DEMO_PATIENT_ID, ...record }),
+    },
+    { attempts: 4, backoffMs: 600 },
+  );
 }

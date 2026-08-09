@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pill, AlertTriangle, CheckCircle2, PackageOpen, Truck, CalendarClock } from "lucide-react";
+import { Pill, AlertTriangle, CheckCircle2, PackageOpen, Truck, CalendarClock, FileDown } from "lucide-react";
 import {
   adherenceFromLogs,
   createRefillOrder,
@@ -12,6 +12,9 @@ import { needsRefill, REFILL_STATUS_LABEL } from "@/lib/api/types";
 import { fmtRelative } from "@/lib/mockData";
 import { ComplianceCard } from "@/components/patient/ComplianceCard";
 import { supplyForecast } from "@/lib/compliance";
+import { downloadComplianceReport } from "@/lib/compliance-report";
+import { useDoseSchedule } from "@/lib/use-dose-schedule";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/app/meds")({
   head: () => ({
@@ -30,6 +33,8 @@ const fmtDate = (iso: string) =>
 
 function Meds() {
   const qc = useQueryClient();
+  const { user } = useAuth();
+  const { schedule } = useDoseSchedule();
   const prescriptions = useQuery({ queryKey: ["prescriptions"], queryFn: () => listPrescriptions() });
   const doseLogs = useQuery({ queryKey: ["dose-logs"], queryFn: () => listDoseLogs() });
   const refills = useQuery({ queryKey: ["refill-orders"], queryFn: () => listRefillOrders() });
@@ -45,10 +50,31 @@ function Meds() {
 
   const logs = doseLogs.data ?? [];
 
+  const exportReport = () =>
+    downloadComplianceReport({
+      patientName: user?.name ?? "Patient",
+      logs,
+      prescriptions: prescriptions.data ?? [],
+      schedule,
+    });
+
   return (
     <div className="px-5 pb-6 pt-6">
-      <h1 className="font-display text-2xl font-semibold tracking-tight">Medications</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Doses, pill supply and Cimas refills.</p>
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="font-display text-2xl font-semibold tracking-tight">Medications</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Doses, pill supply and Cimas refills.
+          </p>
+        </div>
+        <button
+          onClick={exportReport}
+          disabled={doseLogs.isLoading || prescriptions.isLoading}
+          className="mt-1 flex flex-none items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground shadow-[var(--shadow-soft)] disabled:opacity-50"
+        >
+          <FileDown className="h-3.5 w-3.5 text-primary" /> PDF report
+        </button>
+      </div>
 
       <div className="mt-5">
         {doseLogs.isLoading ? (
@@ -57,6 +83,7 @@ function Meds() {
           <ComplianceCard logs={logs} prescriptions={prescriptions.data ?? []} />
         )}
       </div>
+
 
 
       {/* Prescriptions */}
