@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pill, AlertTriangle, CheckCircle2, PackageOpen, Truck, CalendarClock } from "lucide-react";
+import { Pill, AlertTriangle, CheckCircle2, PackageOpen, Truck, CalendarClock, FileDown } from "lucide-react";
 import {
   adherenceFromLogs,
   createRefillOrder,
@@ -12,6 +12,9 @@ import { needsRefill, REFILL_STATUS_LABEL } from "@/lib/api/types";
 import { fmtRelative } from "@/lib/mockData";
 import { ComplianceCard } from "@/components/patient/ComplianceCard";
 import { supplyForecast } from "@/lib/compliance";
+import { downloadComplianceReport } from "@/lib/compliance-report";
+import { useDoseSchedule } from "@/lib/use-dose-schedule";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/app/meds")({
   head: () => ({
@@ -30,6 +33,8 @@ const fmtDate = (iso: string) =>
 
 function Meds() {
   const qc = useQueryClient();
+  const { user } = useAuth();
+  const { schedule } = useDoseSchedule();
   const prescriptions = useQuery({ queryKey: ["prescriptions"], queryFn: () => listPrescriptions() });
   const doseLogs = useQuery({ queryKey: ["dose-logs"], queryFn: () => listDoseLogs() });
   const refills = useQuery({ queryKey: ["refill-orders"], queryFn: () => listRefillOrders() });
