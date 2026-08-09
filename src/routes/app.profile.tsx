@@ -118,6 +118,17 @@ function Profile() {
                 We'll notify you in the app at each time you set
               </p>
             </div>
+            <span
+              className={`flex-none rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+                sync === "synced"
+                  ? "bg-success/15 text-success"
+                  : sync === "offline"
+                    ? "bg-warning/15 text-warning-foreground"
+                    : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {sync === "synced" ? "Synced" : sync === "offline" ? "Offline" : "Syncing"}
+            </span>
           </div>
           <div className="mt-3 divide-y divide-border">
             {DOSE_SLOT_META.map((slot) => (
@@ -144,11 +155,42 @@ function Profile() {
               </div>
             ))}
           </div>
-          <p className="mt-1 text-[11px] text-muted-foreground">
+
+          <div className="mt-3 flex items-center gap-3 rounded-xl bg-muted/50 px-3 py-2.5">
+            <Globe2 className="h-4 w-4 flex-none text-primary" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-medium text-foreground">
+                {schedule.timezone.replace("_", " ")} · {tzOffsetLabel(schedule.timezone)}
+              </p>
+              <p className="truncate text-[11px] text-muted-foreground">
+                {timezoneMismatch
+                  ? `This device is in ${deviceTimeZone.replace("_", " ")}`
+                  : "Reminders follow this timezone, even when you travel"}
+              </p>
+            </div>
+            {timezoneMismatch && (
+              <button
+                onClick={useDeviceTimeZone}
+                className="flex-none rounded-full bg-primary px-3 py-1.5 text-[11px] font-semibold text-primary-foreground"
+              >
+                Use device
+              </button>
+            )}
+          </div>
+
+          <p className="mt-2 text-[11px] text-muted-foreground">
             Each prescription uses the first times in this list, based on how many doses a day it needs.
           </p>
         </div>
       </section>
+
+      <section className="mt-5">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Reminder delivery
+        </h2>
+        <ReminderDeliveryLog timezone={schedule.timezone} />
+      </section>
+
 
 
       <section className="mt-5">
