@@ -2,7 +2,8 @@
 //
 // Stored client-side so the reminders and countdowns work offline, and synced to
 // the backend (`PATCH /api/dose-schedule/`) so the server can mirror the times
-// the patient chose. Shape matches the DoseSchedule model fields 1:1.
+// the patient chose. Shape matches the DoseSchedule model fields 1:1, including
+// the IANA `timezone` the wall-clock times belong to.
 
 export type DoseSlotKey = "morning" | "afternoon" | "evening" | "night";
 
@@ -11,6 +12,8 @@ export interface DoseSchedule {
   afternoon_time: string;
   evening_time: string;
   night_time: string;
+  /** IANA timezone the times above are expressed in, e.g. "Africa/Harare". */
+  timezone: string;
 }
 
 export const DEFAULT_DOSE_SCHEDULE: DoseSchedule = {
@@ -18,14 +21,21 @@ export const DEFAULT_DOSE_SCHEDULE: DoseSchedule = {
   afternoon_time: "13:00",
   evening_time: "18:00",
   night_time: "22:00",
+  timezone: "Africa/Harare",
 };
 
-export const DOSE_SLOT_META: Array<{ key: DoseSlotKey; field: keyof DoseSchedule; label: string }> = [
+export const DOSE_SLOT_META: Array<{
+  key: DoseSlotKey;
+  field: "morning_time" | "afternoon_time" | "evening_time" | "night_time";
+  label: string;
+}> = [
   { key: "morning", field: "morning_time", label: "Morning" },
   { key: "afternoon", field: "afternoon_time", label: "Afternoon" },
   { key: "evening", field: "evening_time", label: "Evening" },
   { key: "night", field: "night_time", label: "Night" },
 ];
+
+export const DOSE_TIME_FIELDS = DOSE_SLOT_META.map((m) => m.field);
 
 const STORAGE_KEY = "neurotrack.doseSchedule";
 
@@ -43,7 +53,8 @@ function hydrate() {
     if (!raw) return;
     const parsed = JSON.parse(raw) as Partial<DoseSchedule>;
     const next = { ...DEFAULT_DOSE_SCHEDULE };
-    for (const { field } of DOSE_SLOT_META) if (isTime(parsed[field])) next[field] = parsed[field]!;
+    for (const field of DOSE_TIME_FIELDS) if (isTime(parsed[field])) next[field] = parsed[field]!;
+    if (typeof parsed.timezone === "string" && parsed.timezone) next.timezone = parsed.timezone;
     current = next;
   } catch {
     /* ignore malformed storage */
@@ -58,7 +69,11 @@ export function getDoseSchedule(): DoseSchedule {
 /** Ordered "HH:MM" strings — the slots a prescription's doses_per_day maps onto. */
 export function getDoseSlots(): string[] {
   const s = getDoseSchedule();
-  return DOSE_SLOT_META.map((m) => s[m.field]);
+  return DOSE_TIME_FIELDS.map((f) => s[f]);
+}
+
+export function getDoseTimeZone(): string {
+  return getDoseSchedule().timezone;
 }
 
 export function setDoseSchedule(patch: Partial<DoseSchedule>) {
