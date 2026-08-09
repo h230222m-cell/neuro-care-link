@@ -107,9 +107,9 @@ export function buildComplianceReport(input: ReportInput): jsPDF {
   doc.text(`${risk.score}`, M + 14, y + 20);
   doc.setFontSize(10);
   doc.text("/100", M + 14 + doc.getTextWidth(`${risk.score}`) + 2, y + 20);
-  doc.setFont("helvetica", "bold").setFontSize(11).setTextColor(...INK);
+  doc.setFont("helvetica", "bold").setFontSize(11).setTextColor(INK[0], INK[1], INK[2]);
   doc.text(risk.label, M + 92, y + 6);
-  doc.setFont("helvetica", "normal").setFontSize(9.5).setTextColor(...GREY);
+  doc.setFont("helvetica", "normal").setFontSize(9.5).setTextColor(GREY[0], GREY[1], GREY[2]);
   const drivers = doc.splitTextToSize(risk.drivers.join(" · "), W - 2 * M - 110) as string[];
   doc.text(drivers.slice(0, 2), M + 92, y + 22);
   y += 66;
@@ -195,7 +195,7 @@ export function buildComplianceReport(input: ReportInput): jsPDF {
   heading("Prescriptions and supply forecast");
   input.prescriptions.forEach((p) => {
     const f = supplyForecast(p, now);
-    doc.setFont("helvetica", "bold").setFontSize(11).setTextColor(...INK);
+    doc.setFont("helvetica", "bold").setFontSize(11).setTextColor(INK[0], INK[1], INK[2]);
     doc.text(`${p.medication_name} — ${p.dosage_mg}`, M, y);
     y += 16;
     row(["Pills on hand", "Daily rate", "Days left", "Runs out", "Refill by", "MPR"], [90, 75, 65, 90, 90, 60], true);
