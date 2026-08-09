@@ -17,9 +17,10 @@ import {
 import { fmtZonedClock, tzOffsetLabel } from "./tz";
 import { DOSE_SLOT_META, type DoseSchedule } from "./dose-schedule";
 
-const BLUE = [47, 82, 168] as const;
-const INK = [26, 32, 44] as const;
-const GREY = [110, 119, 129] as const;
+type RGB = [number, number, number];
+const BLUE: RGB = [47, 82, 168];
+const INK: RGB = [26, 32, 44];
+const GREY: RGB = [110, 119, 129];
 
 export interface ReportInput {
   patientName: string;
@@ -46,7 +47,7 @@ export function buildComplianceReport(input: ReportInput): jsPDF {
   let y = 0;
 
   // ---- header band ----
-  doc.setFillColor(...BLUE);
+  doc.setFillColor(BLUE[0], BLUE[1], BLUE[2]);
   doc.rect(0, 0, W, 92, "F");
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold").setFontSize(18);
@@ -60,16 +61,16 @@ export function buildComplianceReport(input: ReportInput): jsPDF {
   y = 122;
 
   const heading = (text: string) => {
-    doc.setTextColor(...BLUE).setFont("helvetica", "bold").setFontSize(12);
+    doc.setTextColor(BLUE[0], BLUE[1], BLUE[2]).setFont("helvetica", "bold").setFontSize(12);
     doc.text(text, M, y);
     y += 8;
-    doc.setDrawColor(...BLUE).setLineWidth(0.8);
+    doc.setDrawColor(BLUE[0], BLUE[1], BLUE[2]).setLineWidth(0.8);
     doc.line(M, y, W - M, y);
     y += 18;
   };
 
   const body = (text: string, indent = 0) => {
-    doc.setTextColor(...INK).setFont("helvetica", "normal").setFontSize(10);
+    doc.setTextColor(INK[0], INK[1], INK[2]).setFont("helvetica", "normal").setFontSize(10);
     const lines = doc.splitTextToSize(text, W - 2 * M - indent) as string[];
     doc.text(lines, M + indent, y);
     y += lines.length * 14;
@@ -77,7 +78,8 @@ export function buildComplianceReport(input: ReportInput): jsPDF {
 
   const row = (cells: string[], widths: number[], bold = false) => {
     doc.setFont("helvetica", bold ? "bold" : "normal").setFontSize(9.5);
-    doc.setTextColor(...(bold ? INK : GREY));
+    const c: RGB = bold ? INK : GREY;
+    doc.setTextColor(c[0], c[1], c[2]);
     let x = M;
     cells.forEach((c, i) => {
       doc.text(c, x, y);
@@ -101,7 +103,7 @@ export function buildComplianceReport(input: ReportInput): jsPDF {
   heading("Overall assessment");
   doc.setFillColor(244, 247, 252);
   doc.roundedRect(M, y - 12, W - 2 * M, 58, 6, 6, "F");
-  doc.setTextColor(...BLUE).setFont("helvetica", "bold").setFontSize(26);
+  doc.setTextColor(BLUE[0], BLUE[1], BLUE[2]).setFont("helvetica", "bold").setFontSize(26);
   doc.text(`${risk.score}`, M + 14, y + 20);
   doc.setFontSize(10);
   doc.text("/100", M + 14 + doc.getTextWidth(`${risk.score}`) + 2, y + 20);
@@ -159,9 +161,9 @@ export function buildComplianceReport(input: ReportInput): jsPDF {
     const h = Math.max(2, d.adherence * chartH);
     doc.setFillColor(229, 233, 240);
     doc.rect(x + 6, y, barW - 12, chartH, "F");
-    doc.setFillColor(...BLUE);
+    doc.setFillColor(BLUE[0], BLUE[1], BLUE[2]);
     doc.rect(x + 6, y + (chartH - h), barW - 12, h, "F");
-    doc.setTextColor(...GREY).setFont("helvetica", "normal").setFontSize(8);
+    doc.setTextColor(GREY[0], GREY[1], GREY[2]).setFont("helvetica", "normal").setFontSize(8);
     doc.text(d.label, x + barW / 2, y + chartH + 12, { align: "center" });
     doc.text(`${d.taken}/${d.scheduled}`, x + barW / 2, y + chartH + 22, { align: "center" });
   });
@@ -208,7 +210,7 @@ export function buildComplianceReport(input: ReportInput): jsPDF {
       ],
       [90, 75, 65, 90, 90, 60],
     );
-    doc.setTextColor(...GREY).setFont("helvetica", "normal").setFontSize(9);
+    doc.setTextColor(GREY[0], GREY[1], GREY[2]).setFont("helvetica", "normal").setFontSize(9);
     doc.text(
       `${p.pills_per_dose} pill(s) × ${p.doses_per_day}/day · refill threshold ${p.refill_threshold_days} days · consumption variance ${f.consumptionVariance > 0 ? "+" : ""}${f.consumptionVariance} pills`,
       M,
@@ -246,7 +248,7 @@ export function buildComplianceReport(input: ReportInput): jsPDF {
   const pages = doc.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
-    doc.setTextColor(...GREY).setFont("helvetica", "normal").setFontSize(8);
+    doc.setTextColor(GREY[0], GREY[1], GREY[2]).setFont("helvetica", "normal").setFontSize(8);
     doc.text(
       "NeuroTrack is decision-support only and does not replace clinical judgement.",
       M,
