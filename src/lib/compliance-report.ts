@@ -104,9 +104,11 @@ export function buildComplianceReport(input: ReportInput): jsPDF {
   doc.setFillColor(244, 247, 252);
   doc.roundedRect(M, y - 12, W - 2 * M, 58, 6, 6, "F");
   doc.setTextColor(BLUE[0], BLUE[1], BLUE[2]).setFont("helvetica", "bold").setFontSize(26);
-  doc.text(`${risk.score}`, M + 14, y + 20);
-  doc.setFontSize(10);
-  doc.text("/100", M + 14 + doc.getTextWidth(`${risk.score}`) + 2, y + 20);
+  const scoreText = `${risk.score}`;
+  const scoreWidth = doc.getTextWidth(scoreText);
+  doc.text(scoreText, M + 14, y + 22);
+  doc.setFont("helvetica", "normal").setFontSize(10);
+  doc.text("/100", M + 18 + scoreWidth, y + 22);
   doc.setFont("helvetica", "bold").setFontSize(11).setTextColor(INK[0], INK[1], INK[2]);
   doc.text(risk.label, M + 92, y + 6);
   doc.setFont("helvetica", "normal").setFontSize(9.5).setTextColor(GREY[0], GREY[1], GREY[2]);
