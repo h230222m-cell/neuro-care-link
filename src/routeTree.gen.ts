@@ -24,6 +24,7 @@ import { Route as AppHistoryRouteImport } from './routes/app.history'
 import { Route as AppDiaryRouteImport } from './routes/app.diary'
 import { Route as AppCheckinRouteImport } from './routes/app.checkin'
 import { Route as AppCareRouteImport } from './routes/app.care'
+import { Route as ApiReminderDeliveriesRouteImport } from './routes/api/reminder-deliveries'
 import { Route as ApiDoseScheduleRouteImport } from './routes/api/dose-schedule'
 import { Route as ClinicianPatientsIdRouteImport } from './routes/clinician.patients.$id'
 
@@ -102,6 +103,11 @@ const AppCareRoute = AppCareRouteImport.update({
   path: '/care',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiReminderDeliveriesRoute = ApiReminderDeliveriesRouteImport.update({
+  id: '/api/reminder-deliveries',
+  path: '/api/reminder-deliveries',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDoseScheduleRoute = ApiDoseScheduleRouteImport.update({
   id: '/api/dose-schedule',
   path: '/api/dose-schedule',
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/clinician': typeof ClinicianRouteWithChildren
   '/api/dose-schedule': typeof ApiDoseScheduleRoute
+  '/api/reminder-deliveries': typeof ApiReminderDeliveriesRoute
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
   '/app/diary': typeof AppDiaryRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/api/dose-schedule': typeof ApiDoseScheduleRoute
+  '/api/reminder-deliveries': typeof ApiReminderDeliveriesRoute
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
   '/app/diary': typeof AppDiaryRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/clinician': typeof ClinicianRouteWithChildren
   '/api/dose-schedule': typeof ApiDoseScheduleRoute
+  '/api/reminder-deliveries': typeof ApiReminderDeliveriesRoute
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
   '/app/diary': typeof AppDiaryRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/clinician'
     | '/api/dose-schedule'
+    | '/api/reminder-deliveries'
     | '/app/care'
     | '/app/checkin'
     | '/app/diary'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/api/dose-schedule'
+    | '/api/reminder-deliveries'
     | '/app/care'
     | '/app/checkin'
     | '/app/diary'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/clinician'
     | '/api/dose-schedule'
+    | '/api/reminder-deliveries'
     | '/app/care'
     | '/app/checkin'
     | '/app/diary'
@@ -233,6 +245,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ClinicianRoute: typeof ClinicianRouteWithChildren
   ApiDoseScheduleRoute: typeof ApiDoseScheduleRoute
+  ApiReminderDeliveriesRoute: typeof ApiReminderDeliveriesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -342,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCareRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/reminder-deliveries': {
+      id: '/api/reminder-deliveries'
+      path: '/api/reminder-deliveries'
+      fullPath: '/api/reminder-deliveries'
+      preLoaderRoute: typeof ApiReminderDeliveriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/dose-schedule': {
       id: '/api/dose-schedule'
       path: '/api/dose-schedule'
@@ -407,6 +427,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ClinicianRoute: ClinicianRouteWithChildren,
   ApiDoseScheduleRoute: ApiDoseScheduleRoute,
+  ApiReminderDeliveriesRoute: ApiReminderDeliveriesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
