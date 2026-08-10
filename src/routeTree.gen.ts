@@ -24,6 +24,7 @@ import { Route as AppHistoryRouteImport } from './routes/app.history'
 import { Route as AppDiaryRouteImport } from './routes/app.diary'
 import { Route as AppCheckinRouteImport } from './routes/app.checkin'
 import { Route as AppCareRouteImport } from './routes/app.care'
+import { Route as ApiVoiceSamplesRouteImport } from './routes/api/voice-samples'
 import { Route as ApiReminderDeliveriesRouteImport } from './routes/api/reminder-deliveries'
 import { Route as ApiDoseScheduleRouteImport } from './routes/api/dose-schedule'
 import { Route as ClinicianPatientsIdRouteImport } from './routes/clinician.patients.$id'
@@ -103,6 +104,11 @@ const AppCareRoute = AppCareRouteImport.update({
   path: '/care',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiVoiceSamplesRoute = ApiVoiceSamplesRouteImport.update({
+  id: '/api/voice-samples',
+  path: '/api/voice-samples',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiReminderDeliveriesRoute = ApiReminderDeliveriesRouteImport.update({
   id: '/api/reminder-deliveries',
   path: '/api/reminder-deliveries',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/clinician': typeof ClinicianRouteWithChildren
   '/api/dose-schedule': typeof ApiDoseScheduleRoute
   '/api/reminder-deliveries': typeof ApiReminderDeliveriesRoute
+  '/api/voice-samples': typeof ApiVoiceSamplesRoute
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
   '/app/diary': typeof AppDiaryRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/api/dose-schedule': typeof ApiDoseScheduleRoute
   '/api/reminder-deliveries': typeof ApiReminderDeliveriesRoute
+  '/api/voice-samples': typeof ApiVoiceSamplesRoute
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
   '/app/diary': typeof AppDiaryRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/clinician': typeof ClinicianRouteWithChildren
   '/api/dose-schedule': typeof ApiDoseScheduleRoute
   '/api/reminder-deliveries': typeof ApiReminderDeliveriesRoute
+  '/api/voice-samples': typeof ApiVoiceSamplesRoute
   '/app/care': typeof AppCareRoute
   '/app/checkin': typeof AppCheckinRoute
   '/app/diary': typeof AppDiaryRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/clinician'
     | '/api/dose-schedule'
     | '/api/reminder-deliveries'
+    | '/api/voice-samples'
     | '/app/care'
     | '/app/checkin'
     | '/app/diary'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/api/dose-schedule'
     | '/api/reminder-deliveries'
+    | '/api/voice-samples'
     | '/app/care'
     | '/app/checkin'
     | '/app/diary'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/clinician'
     | '/api/dose-schedule'
     | '/api/reminder-deliveries'
+    | '/api/voice-samples'
     | '/app/care'
     | '/app/checkin'
     | '/app/diary'
@@ -246,6 +258,7 @@ export interface RootRouteChildren {
   ClinicianRoute: typeof ClinicianRouteWithChildren
   ApiDoseScheduleRoute: typeof ApiDoseScheduleRoute
   ApiReminderDeliveriesRoute: typeof ApiReminderDeliveriesRoute
+  ApiVoiceSamplesRoute: typeof ApiVoiceSamplesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -355,6 +368,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCareRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/voice-samples': {
+      id: '/api/voice-samples'
+      path: '/api/voice-samples'
+      fullPath: '/api/voice-samples'
+      preLoaderRoute: typeof ApiVoiceSamplesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/reminder-deliveries': {
       id: '/api/reminder-deliveries'
       path: '/api/reminder-deliveries'
@@ -428,17 +448,8 @@ const rootRouteChildren: RootRouteChildren = {
   ClinicianRoute: ClinicianRouteWithChildren,
   ApiDoseScheduleRoute: ApiDoseScheduleRoute,
   ApiReminderDeliveriesRoute: ApiReminderDeliveriesRoute,
+  ApiVoiceSamplesRoute: ApiVoiceSamplesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
