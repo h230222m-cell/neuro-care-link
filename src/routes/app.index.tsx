@@ -23,7 +23,6 @@ export const Route = createFileRoute("/app/")({
 
 function Home() {
   const { user } = useAuth();
-  const today = patientCheckins[patientCheckins.length - 1];
   const streak = 12;
   const adherence = Math.round(
     (patientCheckins.filter((c) => c.medTaken).length / patientCheckins.length) * 100,
