@@ -45,40 +45,8 @@ function Home() {
       </div>
 
       {/* Today card */}
-      <section className="surface-card mt-6 overflow-hidden">
-        <div className="flex items-center justify-between px-5 pt-5">
-          <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Today's check-in</p>
-            <p className="mt-0.5 font-display text-lg font-semibold">2 quick things</p>
-          </div>
-          <Link
-            to="/app/checkin"
-            className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-card)]"
-          >
-            Start
-          </Link>
-        </div>
-        <ul className="mt-4 divide-y divide-border">
-          {[
-            { icon: Pill, label: "Confirm morning Levodopa", done: today?.medTaken ?? false },
-            { icon: Mic, label: "10-second voice sample", done: false },
-          ].map((t) => (
-            <li key={t.label} className="flex items-center gap-3 px-5 py-3">
-              <span
-                className={`grid h-8 w-8 place-items-center rounded-full ${
-                  t.done ? "bg-success text-success-foreground" : "bg-primary-soft text-primary"
-                }`}
-              >
-                <t.icon className="h-4 w-4" />
-              </span>
-              <span className={`flex-1 text-sm ${t.done ? "text-muted-foreground line-through" : "text-foreground"}`}>
-                {t.label}
-              </span>
-              {t.done && <span className="text-xs font-medium text-success">Done</span>}
-            </li>
-          ))}
-        </ul>
-      </section>
+      <TodayCard />
+
 
       {/* Stat row */}
       <section className="mt-4 grid grid-cols-2 gap-3">
