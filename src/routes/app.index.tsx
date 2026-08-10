@@ -4,7 +4,10 @@ import { Sparkline } from "@/components/Sparkline";
 import { NextDoseTimer } from "@/components/patient/NextDoseTimer";
 import { useAuth } from "@/lib/auth";
 import { patientCheckins, patientAppointments, fmtRelative } from "@/lib/mockData";
-import { Mic, Pill, ChevronRight, CalendarClock } from "lucide-react";
+import { listDoseLogs, listPrescriptions } from "@/lib/api/client";
+import { hasVoiceSampleToday } from "@/lib/voice";
+import { useQuery } from "@tanstack/react-query";
+import { Mic, Pill, ChevronRight, CalendarClock, Check } from "lucide-react";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -97,6 +100,85 @@ function Home() {
         or change your medication.
       </p>
     </div>
+  );
+}
+
+/** Today's real tasks: one row per active prescription plus the voice sample. */
+function TodayCard() {
+  const prescriptions = useQuery({ queryKey: ["prescriptions"], queryFn: () => listPrescriptions() });
+  const logs = useQuery({ queryKey: ["dose-logs"], queryFn: () => listDoseLogs() });
+
+  const day = new Date().toISOString().slice(0, 10);
+  const active = (prescriptions.data ?? []).filter((p) => p.is_active);
+  const loggedToday = new Set(
+    (logs.data ?? [])
+      .filter((l) => (l.actual_time ?? l.scheduled_time).slice(0, 10) === day)
+      .map((l) => l.prescription),
+  );
+
+  const tasks = [
+    ...active.map((p) => ({
+      key: `p${p.id}`,
+      icon: Pill,
+      label: `Confirm ${p.medication_name.split(" (")[0]}`,
+      meta: `${p.dosage_mg} · ${p.doses_per_day}× daily`,
+      done: loggedToday.has(p.id),
+    })),
+    {
+      key: "voice",
+      icon: Mic,
+      label: "10-second voice sample",
+      meta: "Sustained “aaah”",
+      done: hasVoiceSampleToday(),
+    },
+  ];
+  const remaining = tasks.filter((t) => !t.done).length;
+
+  return (
+    <section className="surface-card mt-6 overflow-hidden">
+      <div className="flex items-center justify-between px-5 pt-5">
+        <div>
+          <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Today's check-in</p>
+          <p className="mt-0.5 font-display text-lg font-semibold">
+            {prescriptions.isLoading
+              ? "Loading…"
+              : remaining === 0
+                ? "All done for today"
+                : `${remaining} thing${remaining > 1 ? "s" : ""} left`}
+          </p>
+        </div>
+        <Link
+          to="/app/checkin"
+          className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-card)]"
+        >
+          {remaining === 0 ? "Review" : "Start"}
+        </Link>
+      </div>
+      <ul className="mt-4 divide-y divide-border">
+        {tasks.map((t) => (
+          <li key={t.key} className="flex items-center gap-3 px-5 py-3">
+            <span
+              className={`grid h-8 w-8 flex-none place-items-center rounded-full ${
+                t.done ? "bg-success text-success-foreground" : "bg-primary-soft text-primary"
+              }`}
+            >
+              {t.done ? <Check className="h-4 w-4" /> : <t.icon className="h-4 w-4" />}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span
+                className={`block truncate text-sm ${
+                  t.done ? "text-muted-foreground line-through" : "text-foreground"
+                }`}
+              >
+                {t.label}
+              </span>
+              <span className="block truncate text-[11px] text-muted-foreground">{t.meta}</span>
+            </span>
+            {t.done && <span className="text-xs font-medium text-success">Done</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
