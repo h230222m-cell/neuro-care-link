@@ -21,7 +21,7 @@ import {
 } from "./types";
 
 import { DEFAULT_DOSE_SCHEDULE, type DoseSchedule } from "../dose-schedule";
-import { fetchJsonWithRetry } from "./http";
+import { fetchJsonWithRetry, fetchWithRetry } from "./http";
 
 let doseScheduleStore: DoseSchedule = { ...DEFAULT_DOSE_SCHEDULE };
 
@@ -413,4 +413,35 @@ export async function ackReminderDelivery(record: {
     },
     { attempts: 4, backoffMs: 600 },
   );
+}
+
+// ---- Voice samples ---------------------------------------------------------
+// POST /api/voice-samples — multipart upload of the sustained-vowel take.
+// The FastAPI acoustic service will consume the same multipart shape; until it
+// is live the app route accepts and acknowledges the upload.
+
+export async function uploadVoiceSample(
+  blob: Blob,
+  meta: { duration_sec: number; sample_rate: number; mean_level: number },
+) {
+  const form = new FormData();
+  form.append("patient_id", String(DEMO_PATIENT_ID));
+  form.append("duration_sec", meta.duration_sec.toFixed(2));
+  form.append("sample_rate", String(meta.sample_rate));
+  form.append("mean_level", meta.mean_level.toFixed(4));
+  form.append("recorded_at", new Date().toISOString());
+  form.append("file", blob, `voice-${Date.now()}.wav`);
+
+  try {
+    const res = await fetchWithRetry(
+      `${API_BASE_URL}/api/voice-samples`,
+      { method: "POST", body: form },
+      { attempts: 3, backoffMs: 600, timeoutMs: 20000 },
+    );
+    if (!res.ok) throw new Error(`upload → ${res.status}`);
+    return { uploaded: true as const };
+  } catch {
+    // Offline-first: the local ledger keeps the take queued for the next sync.
+    return { uploaded: false as const };
+  }
 }
