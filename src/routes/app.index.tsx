@@ -1,13 +1,15 @@
+import React, { useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Mic, Pill, ChevronRight, CalendarClock, Check } from "lucide-react";
+
 import { Logo } from "@/components/Logo";
 import { Sparkline } from "@/components/Sparkline";
 import { NextDoseTimer } from "@/components/patient/NextDoseTimer";
 import { useAuth } from "@/lib/auth";
 import { patientCheckins, patientAppointments, fmtRelative } from "@/lib/mockData";
-import { listDoseLogs, listPrescriptions } from "@/lib/api/client";
+import { listDoseLogs, listPrescriptions, api } from "@/lib/api";
 import { hasVoiceSampleToday } from "@/lib/voice";
-import { useQuery } from "@tanstack/react-query";
-import { Mic, Pill, ChevronRight, CalendarClock, Check } from "lucide-react";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -28,7 +30,6 @@ function Home() {
     (patientCheckins.filter((c) => c.medTaken).length / patientCheckins.length) * 100,
   );
   const nextAppt = patientAppointments.find((a) => a.status === "scheduled");
-  
 
   return (
     <div className="px-5 pb-6 pt-6">
@@ -42,13 +43,12 @@ function Home() {
       <div className="mt-6">
         <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">{greeting()}</p>
         <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight">
-          Hello, {user?.name.split(" ")[0]}
+          Hello, {user?.name ? user.name.split(" ")[0] : "Tendai"}
         </h1>
       </div>
 
       {/* Today card */}
       <TodayCard />
-
 
       {/* Stat row */}
       <section className="mt-4 grid grid-cols-2 gap-3">
@@ -71,7 +71,6 @@ function Home() {
       {/* Next dose timer & appointment */}
       <section className="mt-4 space-y-3">
         <NextDoseTimer />
-
 
         {nextAppt && (
           <Link
@@ -104,27 +103,36 @@ function Home() {
 
 /** Today's real tasks: one row per active prescription plus the voice sample. */
 function TodayCard() {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
+
   const prescriptions = useQuery({ queryKey: ["prescriptions"], queryFn: () => listPrescriptions() });
   const logs = useQuery({ queryKey: ["dose-logs"], queryFn: () => listDoseLogs() });
 
   const day = new Date().toISOString().slice(0, 10);
-  const active = (prescriptions.data ?? []).filter((p) => p.is_active);
+
+  // Safely check active status
+  const active = (prescriptions.data ?? []).filter((p: any) => p.is_active !== false);
+
   const loggedToday = new Set(
     (logs.data ?? [])
-      .filter((l) => (l.actual_time ?? l.scheduled_time).slice(0, 10) === day)
-      .map((l) => l.prescription),
+      .filter((l: any) => ((l.actual_time ?? l.scheduled_time ?? l.timestamp) || "").slice(0, 10) === day)
+      .map((l: any) => l.prescription ?? l.id),
   );
 
   const tasks = [
-    ...active.map((p) => ({
+    ...active.map((p: any) => ({
       key: `p${p.id}`,
+      id: p.id,
+      type: "medication",
       icon: Pill,
-      label: `Confirm ${p.medication_name.split(" (")[0]}`,
-      meta: `${p.dosage_mg} · ${p.doses_per_day}× daily`,
+      label: `Confirm ${p.medication_name ? p.medication_name.split(" (")[0] : "Medication"}`,
+      meta: `${p.dosage_mg} · ${p.doses_per_day ?? p.daily_dose_rate ?? 3}× daily`,
       done: loggedToday.has(p.id),
     })),
     {
       key: "voice",
+      type: "voice",
       icon: Mic,
       label: "10-second voice sample",
       meta: "Sustained “aaah”",
@@ -133,8 +141,31 @@ function TodayCard() {
   ];
   const remaining = tasks.filter((t) => !t.done).length;
 
+  const handleVoiceUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      await api.uploadVoiceSample(file, 1);
+      alert("Voice sample uploaded successfully to Django backend!");
+      queryClient.invalidateQueries({ queryKey: ["dose-logs"] });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload voice sample.");
+    }
+  };
+
   return (
     <section className="surface-card mt-6 overflow-hidden">
+      {/* Hidden file input for audio selection */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="audio/*"
+        onChange={handleVoiceUpload}
+        className="hidden"
+      />
+
       <div className="flex items-center justify-between px-5 pt-5">
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Today's check-in</p>
@@ -153,9 +184,20 @@ function TodayCard() {
           {remaining === 0 ? "Review" : "Start"}
         </Link>
       </div>
+
       <ul className="mt-4 divide-y divide-border">
         {tasks.map((t) => (
-          <li key={t.key} className="flex items-center gap-3 px-5 py-3">
+          <li
+            key={t.key}
+            onClick={() => {
+              if (t.type === "voice" && !t.done) {
+                fileInputRef.current?.click();
+              }
+            }}
+            className={`flex items-center gap-3 px-5 py-3 ${
+              t.type === "voice" && !t.done ? "cursor-pointer hover:bg-muted/40 transition" : ""
+            }`}
+          >
             <span
               className={`grid h-8 w-8 flex-none place-items-center rounded-full ${
                 t.done ? "bg-success text-success-foreground" : "bg-primary-soft text-primary"
