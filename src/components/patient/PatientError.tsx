@@ -19,7 +19,7 @@ export function PatientError({ error, reset }: import("@tanstack/react-router").
         <p className="mt-1 text-sm text-muted-foreground">
           We couldn't load this screen. Your data is safe — try again in a moment.
         </p>
-        {error?.message && (
+        {(error as Error | undefined)?.message && (
           <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-left text-[11px] font-mono text-muted-foreground">
             {(error as Error).message}
           </p>
