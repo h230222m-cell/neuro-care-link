@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
 
-export function PatientError({ error, reset }: { error: Error; reset: () => void }) {
+export function PatientError({ error, reset }: import("@tanstack/react-router").ErrorComponentProps) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "patient_route" });
@@ -19,9 +19,9 @@ export function PatientError({ error, reset }: { error: Error; reset: () => void
         <p className="mt-1 text-sm text-muted-foreground">
           We couldn't load this screen. Your data is safe — try again in a moment.
         </p>
-        {error?.message && (
+        {(error as Error | undefined)?.message && (
           <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-left text-[11px] font-mono text-muted-foreground">
-            {error.message}
+            {(error as Error).message}
           </p>
         )}
         <div className="mt-5 flex flex-col gap-2">
