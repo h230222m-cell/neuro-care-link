@@ -92,7 +92,7 @@ function PatientRow({ p }: { p: PatientSummary }) {
       ? "bg-destructive/10 text-destructive"
       : p.tier === "tier2"
         ? "bg-warning/20 text-warning-foreground"
-        : "bg-success/15 text-success-foreground";
+        : "bg-success/15 text-success";
 
   return (
     <Link
