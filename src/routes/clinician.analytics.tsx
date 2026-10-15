@@ -28,8 +28,8 @@ function Analytics() {
   );
 
   const bars = [
-    { label: "Tier 1", value: tier1, color: "bg-destructive" },
-    { label: "Tier 2", value: tier2, color: "bg-warning" },
+    { label: "Critical alert", value: tier1, color: "bg-destructive" },
+    { label: "Routine review", value: tier2, color: "bg-warning" },
     { label: "Stable", value: stable, color: "bg-success" },
   ];
 

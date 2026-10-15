@@ -9,7 +9,7 @@ export const Route = createFileRoute("/clinician/alerts")({
   head: () => ({
     meta: [
       { title: "Alerts inbox — NeuroTrack Clinician" },
-      { name: "description", content: "Tier 1 and Tier 2 patient escalations, ready to acknowledge or assign." },
+      { name: "description", content: "Critical alerts and routine reviews, ready to acknowledge or assign." },
       { property: "og:title", content: "Alerts inbox — NeuroTrack Clinician" },
       { property: "og:description", content: "Focused patient escalations." },
     ],
@@ -135,7 +135,7 @@ function FallEventsPanel() {
     <section className="mt-6">
       <div className="flex items-baseline justify-between">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-destructive">
-          Tier 1 · fall events {rows.length > 0 && `· ${rows.length}`}
+          Fall events {rows.length > 0 && `· ${rows.length}`}
         </h2>
         <span className="text-xs text-muted-foreground">From patient symptom diaries</span>
       </div>

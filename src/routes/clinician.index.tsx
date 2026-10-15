@@ -53,8 +53,8 @@ function Roster() {
         <div className="flex gap-1.5 overflow-x-auto">
           {([
             ["all", "All"],
-            ["tier1", "Tier 1"],
-            ["tier2", "Tier 2"],
+            ["tier1", "Critical"],
+            ["tier2", "Routine review"],
             ["stable", "Stable"],
           ] as const).map(([k, label]) => (
             <button
