@@ -9,34 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ClinicianRouteImport } from './routes/clinician'
-import { Route as ApiDoseScheduleRouteImport } from './routes/api/dose-schedule'
-import { Route as ApiReminderDeliveriesRouteImport } from './routes/api/reminder-deliveries'
-import { Route as ApiVoiceSamplesRouteImport } from './routes/api/voice-samples'
-import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as AppCareRouteImport } from './routes/app.care'
-import { Route as AppCheckinRouteImport } from './routes/app.checkin'
-import { Route as AppDiaryRouteImport } from './routes/app.diary'
-import { Route as AppHistoryRouteImport } from './routes/app.history'
-import { Route as AppMedsRouteImport } from './routes/app.meds'
-import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as ClinicianIndexRouteImport } from './routes/clinician.index'
-import { Route as ClinicianAlertsRouteImport } from './routes/clinician.alerts'
-import { Route as ClinicianAnalyticsRouteImport } from './routes/clinician.analytics'
+import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as ClinicianDiariesRouteImport } from './routes/clinician.diaries'
+import { Route as ClinicianAnalyticsRouteImport } from './routes/clinician.analytics'
+import { Route as ClinicianAlertsRouteImport } from './routes/clinician.alerts'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppMedsRouteImport } from './routes/app.meds'
+import { Route as AppHistoryRouteImport } from './routes/app.history'
+import { Route as AppDiaryRouteImport } from './routes/app.diary'
+import { Route as AppCheckinRouteImport } from './routes/app.checkin'
+import { Route as AppCareRouteImport } from './routes/app.care'
+import { Route as ApiVoiceSamplesRouteImport } from './routes/api/voice-samples'
+import { Route as ApiReminderDeliveriesRouteImport } from './routes/api/reminder-deliveries'
+import { Route as ApiDoseScheduleRouteImport } from './routes/api/dose-schedule'
 import { Route as ClinicianPatientsIdRouteImport } from './routes/clinician.patients.$id'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
+const ClinicianRoute = ClinicianRouteImport.update({
+  id: '/clinician',
+  path: '/clinician',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -44,69 +39,29 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ClinicianRoute = ClinicianRouteImport.update({
-  id: '/clinician',
-  path: '/clinician',
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiDoseScheduleRoute = ApiDoseScheduleRouteImport.update({
-  id: '/api/dose-schedule',
-  path: '/api/dose-schedule',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiReminderDeliveriesRoute = ApiReminderDeliveriesRouteImport.update({
-  id: '/api/reminder-deliveries',
-  path: '/api/reminder-deliveries',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiVoiceSamplesRoute = ApiVoiceSamplesRouteImport.update({
-  id: '/api/voice-samples',
-  path: '/api/voice-samples',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppIndexRoute = AppIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCareRoute = AppCareRouteImport.update({
-  id: '/care',
-  path: '/care',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCheckinRoute = AppCheckinRouteImport.update({
-  id: '/checkin',
-  path: '/checkin',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDiaryRoute = AppDiaryRouteImport.update({
-  id: '/diary',
-  path: '/diary',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppHistoryRoute = AppHistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppMedsRoute = AppMedsRouteImport.update({
-  id: '/meds',
-  path: '/meds',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppProfileRoute = AppProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ClinicianIndexRoute = ClinicianIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ClinicianRoute,
 } as any)
-const ClinicianAlertsRoute = ClinicianAlertsRouteImport.update({
-  id: '/alerts',
-  path: '/alerts',
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const ClinicianDiariesRoute = ClinicianDiariesRouteImport.update({
+  id: '/diaries',
+  path: '/diaries',
   getParentRoute: () => ClinicianRoute,
 } as any)
 const ClinicianAnalyticsRoute = ClinicianAnalyticsRouteImport.update({
@@ -114,10 +69,55 @@ const ClinicianAnalyticsRoute = ClinicianAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => ClinicianRoute,
 } as any)
-const ClinicianDiariesRoute = ClinicianDiariesRouteImport.update({
-  id: '/diaries',
-  path: '/diaries',
+const ClinicianAlertsRoute = ClinicianAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
   getParentRoute: () => ClinicianRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMedsRoute = AppMedsRouteImport.update({
+  id: '/meds',
+  path: '/meds',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoryRoute = AppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDiaryRoute = AppDiaryRouteImport.update({
+  id: '/diary',
+  path: '/diary',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCheckinRoute = AppCheckinRouteImport.update({
+  id: '/checkin',
+  path: '/checkin',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCareRoute = AppCareRouteImport.update({
+  id: '/care',
+  path: '/care',
+  getParentRoute: () => AppRoute,
+} as any)
+const ApiVoiceSamplesRoute = ApiVoiceSamplesRouteImport.update({
+  id: '/api/voice-samples',
+  path: '/api/voice-samples',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReminderDeliveriesRoute = ApiReminderDeliveriesRouteImport.update({
+  id: '/api/reminder-deliveries',
+  path: '/api/reminder-deliveries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDoseScheduleRoute = ApiDoseScheduleRouteImport.update({
+  id: '/api/dose-schedule',
+  path: '/api/dose-schedule',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ClinicianPatientsIdRoute = ClinicianPatientsIdRouteImport.update({
   id: '/patients/$id',
@@ -263,18 +263,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
+    '/clinician': {
+      id: '/clinician'
+      path: '/clinician'
+      fullPath: '/clinician'
+      preLoaderRoute: typeof ClinicianRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -284,82 +277,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/clinician': {
-      id: '/clinician'
-      path: '/clinician'
-      fullPath: '/clinician'
-      preLoaderRoute: typeof ClinicianRouteImport
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/dose-schedule': {
-      id: '/api/dose-schedule'
-      path: '/api/dose-schedule'
-      fullPath: '/api/dose-schedule'
-      preLoaderRoute: typeof ApiDoseScheduleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/reminder-deliveries': {
-      id: '/api/reminder-deliveries'
-      path: '/api/reminder-deliveries'
-      fullPath: '/api/reminder-deliveries'
-      preLoaderRoute: typeof ApiReminderDeliveriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/voice-samples': {
-      id: '/api/voice-samples'
-      path: '/api/voice-samples'
-      fullPath: '/api/voice-samples'
-      preLoaderRoute: typeof ApiVoiceSamplesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app/': {
-      id: '/app/'
+    '/': {
+      id: '/'
       path: '/'
-      fullPath: '/app/'
-      preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/care': {
-      id: '/app/care'
-      path: '/care'
-      fullPath: '/app/care'
-      preLoaderRoute: typeof AppCareRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/checkin': {
-      id: '/app/checkin'
-      path: '/checkin'
-      fullPath: '/app/checkin'
-      preLoaderRoute: typeof AppCheckinRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/diary': {
-      id: '/app/diary'
-      path: '/diary'
-      fullPath: '/app/diary'
-      preLoaderRoute: typeof AppDiaryRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/history': {
-      id: '/app/history'
-      path: '/history'
-      fullPath: '/app/history'
-      preLoaderRoute: typeof AppHistoryRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/meds': {
-      id: '/app/meds'
-      path: '/meds'
-      fullPath: '/app/meds'
-      preLoaderRoute: typeof AppMedsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/profile': {
-      id: '/app/profile'
-      path: '/profile'
-      fullPath: '/app/profile'
-      preLoaderRoute: typeof AppProfileRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/clinician/': {
       id: '/clinician/'
@@ -368,11 +298,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClinicianIndexRouteImport
       parentRoute: typeof ClinicianRoute
     }
-    '/clinician/alerts': {
-      id: '/clinician/alerts'
-      path: '/alerts'
-      fullPath: '/clinician/alerts'
-      preLoaderRoute: typeof ClinicianAlertsRouteImport
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/clinician/diaries': {
+      id: '/clinician/diaries'
+      path: '/diaries'
+      fullPath: '/clinician/diaries'
+      preLoaderRoute: typeof ClinicianDiariesRouteImport
       parentRoute: typeof ClinicianRoute
     }
     '/clinician/analytics': {
@@ -382,12 +319,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClinicianAnalyticsRouteImport
       parentRoute: typeof ClinicianRoute
     }
-    '/clinician/diaries': {
-      id: '/clinician/diaries'
-      path: '/diaries'
-      fullPath: '/clinician/diaries'
-      preLoaderRoute: typeof ClinicianDiariesRouteImport
+    '/clinician/alerts': {
+      id: '/clinician/alerts'
+      path: '/alerts'
+      fullPath: '/clinician/alerts'
+      preLoaderRoute: typeof ClinicianAlertsRouteImport
       parentRoute: typeof ClinicianRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/meds': {
+      id: '/app/meds'
+      path: '/meds'
+      fullPath: '/app/meds'
+      preLoaderRoute: typeof AppMedsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/history': {
+      id: '/app/history'
+      path: '/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AppHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/diary': {
+      id: '/app/diary'
+      path: '/diary'
+      fullPath: '/app/diary'
+      preLoaderRoute: typeof AppDiaryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/checkin': {
+      id: '/app/checkin'
+      path: '/checkin'
+      fullPath: '/app/checkin'
+      preLoaderRoute: typeof AppCheckinRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/care': {
+      id: '/app/care'
+      path: '/care'
+      fullPath: '/app/care'
+      preLoaderRoute: typeof AppCareRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/api/voice-samples': {
+      id: '/api/voice-samples'
+      path: '/api/voice-samples'
+      fullPath: '/api/voice-samples'
+      preLoaderRoute: typeof ApiVoiceSamplesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reminder-deliveries': {
+      id: '/api/reminder-deliveries'
+      path: '/api/reminder-deliveries'
+      fullPath: '/api/reminder-deliveries'
+      preLoaderRoute: typeof ApiReminderDeliveriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/dose-schedule': {
+      id: '/api/dose-schedule'
+      path: '/api/dose-schedule'
+      fullPath: '/api/dose-schedule'
+      preLoaderRoute: typeof ApiDoseScheduleRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/clinician/patients/$id': {
       id: '/clinician/patients/$id'
