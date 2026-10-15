@@ -21,7 +21,7 @@ export function PatientError({ error, reset }: import("@tanstack/react-router").
         </p>
         {error?.message && (
           <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-left text-[11px] font-mono text-muted-foreground">
-            {error.message}
+            {(error as Error).message}
           </p>
         )}
         <div className="mt-5 flex flex-col gap-2">
