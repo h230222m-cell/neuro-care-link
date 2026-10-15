@@ -61,8 +61,8 @@ export const api = {
     return await res.json();
   },
 
-  getCimasAdminDashboard: async () => {
-    const res = await fetch(`${DJANGO_BASE_URL}/api/cimas/dashboard/`);
+  getPharmacyDashboard: async () => {
+    const res = await fetch(`${DJANGO_BASE_URL}/api/pharmacy/dashboard/`);
     if (!res.ok) throw new Error('Failed to fetch clinician dashboard data');
     return await res.json();
   },

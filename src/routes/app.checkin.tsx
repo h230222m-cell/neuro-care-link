@@ -3,7 +3,8 @@ import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Pill, Check, X } from "lucide-react";
 import { createDoseLog, listPrescriptions } from "@/lib/api/client";
-import { doseTimes, type Prescription } from "@/lib/api/types";
+import { dailyDoseRate, doseTimes, type Prescription } from "@/lib/api/types";
+import { daysOfSupply, REFILL_THRESHOLD_DAYS } from "@/lib/monitoring";
 import { VoiceCaptureCard } from "@/components/patient/VoiceCaptureCard";
 import { fmtClock, slotDate } from "@/lib/dose-timers";
 
@@ -44,6 +45,9 @@ function CheckIn() {
   const [statuses, setStatuses] = useState<Record<number, DoseStatus>>({});
   const [notes, setNotes] = useState("");
   const [voiceOk, setVoiceOk] = useState(false);
+  const [counts, setCounts] = useState<Record<number, string>>({});
+  const [pin, setPin] = useState("");
+  const [noCaregiver, setNoCaregiver] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -51,8 +55,10 @@ function CheckIn() {
   const active = (prescriptions.data ?? []).filter((p) => p.is_active);
   const allAnswered = active.length > 0 && active.every((p) => statuses[p.id]);
 
-  const steps = ["Medication", "Voice sample"];
-  const canNext = [allAnswered, voiceOk][step];
+  const countsOk = active.length > 0 && active.every((p) => counts[p.id] !== undefined && counts[p.id] !== "" && Number(counts[p.id]) >= 0);
+  const caregiverOk = noCaregiver || /^\d{4}$/.test(pin);
+  const steps = ["Medication", "Pill count", "Voice sample"];
+  const canNext = [allAnswered, countsOk && caregiverOk, voiceOk][step];
 
   const submit = async () => {
     setSaving(true);
@@ -63,7 +69,14 @@ function CheckIn() {
           prescription: p.id,
           was_taken: statuses[p.id] === "taken",
           actual_time: statuses[p.id] === "taken" ? new Date().toISOString() : null,
-          notes: notes.trim() || null,
+          notes:
+            [
+              `pills_left=${counts[p.id] ?? ""}`,
+              noCaregiver ? "caregiver=unsigned" : "caregiver=signed",
+              notes.trim(),
+            ]
+              .filter(Boolean)
+              .join(" | ") || null,
         }),
       ),
     );
@@ -162,6 +175,72 @@ function CheckIn() {
               </div>
             )}
             {step === 1 && (
+              <div>
+                <h2 className="font-display text-lg font-semibold">Pills left</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Count what's in each pack. We use this to order a refill before you run out.
+                </p>
+                <ul className="mt-5 space-y-3">
+                  {active.map((p) => {
+                    const left = Number(counts[p.id]);
+                    const hasValue = counts[p.id] !== undefined && counts[p.id] !== "";
+                    const days = hasValue ? daysOfSupply(left, dailyDoseRate(p)) : null;
+                    return (
+                      <li key={p.id} className="rounded-xl border border-border p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate font-display text-sm font-semibold">{p.medication_name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {dailyDoseRate(p)} pills a day · last record {p.current_pill_count}
+                            </p>
+                          </div>
+                          <input
+                            inputMode="numeric"
+                            aria-label={`Pills left for ${p.medication_name}`}
+                            value={counts[p.id] ?? ""}
+                            onChange={(e) =>
+                              setCounts((c) => ({ ...c, [p.id]: e.target.value.replace(/\D/g, "").slice(0, 4) }))
+                            }
+                            placeholder="0"
+                            className="w-20 rounded-lg border border-input bg-background px-3 py-2 text-center font-display text-lg font-semibold outline-none ring-ring focus:ring-2"
+                          />
+                        </div>
+                        {days !== null && (
+                          <p
+                            className={`mt-2 text-xs ${days <= REFILL_THRESHOLD_DAYS ? "font-semibold text-destructive" : "text-muted-foreground"}`}
+                          >
+                            About {days} day{days === 1 ? "" : "s"} left
+                            {days <= REFILL_THRESHOLD_DAYS && " — a refill request will be sent to your pharmacy."}
+                          </p>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+
+                <div className="mt-6 rounded-xl bg-muted/60 p-4">
+                  <p className="text-sm font-medium text-foreground">Caregiver confirmation</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Ask your caregiver to enter their 4-digit PIN to confirm today's doses.
+                  </p>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    aria-label="Caregiver PIN"
+                    disabled={noCaregiver}
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                    placeholder="••••"
+                    className="mt-3 w-32 rounded-lg border border-input bg-background px-3 py-2 text-center tracking-[0.5em] outline-none ring-ring focus:ring-2 disabled:opacity-50"
+                  />
+                  <label className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                    <input type="checkbox" checked={noCaregiver} onChange={(e) => setNoCaregiver(e.target.checked)} />
+                    No caregiver with me today
+                  </label>
+                </div>
+              </div>
+            )}
+            {step === 2 && (
               <>
                 <VoiceCaptureCard onSaved={() => setVoiceOk(true)} />
                 <label className="mt-8 block">

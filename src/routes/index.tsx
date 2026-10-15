@@ -11,10 +11,10 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "A calm daily check-in for patients and a focused clinical console for Cimas. Decision-support only.",
+          "A calm daily check-in for patients and a focused clinical console for clinicians. Decision-support only.",
       },
       { property: "og:title", content: "NeuroTrack — Daily monitoring for Parkinson's care" },
-      { property: "og:description", content: "Focused daily monitoring built with Cimas neurology in Zimbabwe." },
+      { property: "og:description", content: "Focused daily monitoring for Parkinson's care in Zimbabwe." },
     ],
   }),
   component: Landing,
@@ -45,7 +45,7 @@ function Landing() {
         <section className="grid gap-12 md:grid-cols-2 md:items-center">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 text-xs font-medium text-primary">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Built with Cimas · Zimbabwe
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Remote monitoring · Zimbabwe
             </span>
             <h1 className="mt-5 font-display text-4xl font-semibold leading-[1.05] tracking-tight text-foreground sm:text-5xl">
               Parkinson's care that checks in, <span className="text-primary">every day</span>.

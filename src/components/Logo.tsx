@@ -12,7 +12,7 @@ export function Logo({ className = "" }: { className?: string }) {
       </div>
       <div className="flex flex-col leading-none">
         <span className="font-display text-lg font-semibold tracking-tight text-foreground">NeuroTrack</span>
-        <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Cimas Care</span>
+        <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Remote care</span>
       </div>
     </div>
   );

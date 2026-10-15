@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       id: crypto.randomUUID(),
       role,
       name: name?.trim() || (role === "patient" ? "Tendai Moyo" : "Dr. Chikafu"),
-      email: role === "patient" ? "patient@demo.neurotrack" : "clinician@cimas.co.zw",
+      email: role === "patient" ? "patient@demo.neurotrack" : "clinician@demo.neurotrack",
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
     setUser(u);

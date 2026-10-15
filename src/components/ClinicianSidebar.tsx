@@ -58,7 +58,7 @@ export function ClinicianSidebar() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-foreground">{user?.name ?? "Clinician"}</p>
-            <p className="truncate text-xs text-muted-foreground">Cimas Neurology</p>
+            <p className="truncate text-xs text-muted-foreground">Neurology clinic</p>
           </div>
           <button
             onClick={() => {

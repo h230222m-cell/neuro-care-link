@@ -9,7 +9,7 @@ export const Route = createFileRoute("/clinician/patients/$id")({
       { title: `Patient ${params.id} — NeuroTrack Clinician` },
       { name: "description", content: "Detailed patient view: voice stability and medication adherence." },
       { property: "og:title", content: "Patient detail — NeuroTrack" },
-      { property: "og:description", content: "Focused trend detail for a Cimas patient." },
+      { property: "og:description", content: "Focused trend detail for a monitored patient." },
     ],
   }),
   loader: ({ params }): { patient: PatientSummary } => {

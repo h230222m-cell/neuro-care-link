@@ -14,7 +14,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Sign in — NeuroTrack" },
       { name: "description", content: "Sign in to your NeuroTrack patient or clinician account." },
       { property: "og:title", content: "Sign in — NeuroTrack" },
-      { property: "og:description", content: "Access your daily check-in or the Cimas clinician dashboard." },
+      { property: "og:description", content: "Access your daily check-in or the clinician dashboard." },
     ],
   }),
   validateSearch: searchSchema,

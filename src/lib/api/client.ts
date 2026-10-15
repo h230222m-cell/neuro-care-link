@@ -84,7 +84,7 @@ const refillOrders: RefillOrder[] = [
     status: "AUTO_GENERATED",
     days_left_at_trigger: 4,
     requested_at: iso(-1, 6, 15),
-    notes: "Supply fell below the 5-day threshold — sent to Cimas automatically.",
+    notes: "Supply fell below the 5-day threshold — sent to the pharmacy automatically.",
   },
 ];
 

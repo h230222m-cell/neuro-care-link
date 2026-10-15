@@ -8,7 +8,7 @@ export const Route = createFileRoute("/clinician/")({
   head: () => ({
     meta: [
       { title: "Roster — NeuroTrack Clinician" },
-      { name: "description", content: "Patient roster with tier flags, adherence and voice trends for the Cimas team." },
+      { name: "description", content: "Patient roster with tier flags, adherence and voice trends for the care team." },
       { property: "og:title", content: "Roster — NeuroTrack Clinician" },
       { property: "og:description", content: "Prioritized care queue." },
     ],
@@ -26,7 +26,7 @@ function Roster() {
     return roster
       .filter((p) => (filter === "all" ? true : p.tier === filter))
       .filter((p) => p.name.toLowerCase().includes(q.toLowerCase()))
-      .sort((a, b) => tierRank(a.tier) - tierRank(b.tier));
+      .sort((a, b) => tierRank(a.tier) - tierRank(b.tier) || (b.monitoring.deviation ?? 0) - (a.monitoring.deviation ?? 0));
   }, [q, filter]);
 
   return (
@@ -53,8 +53,8 @@ function Roster() {
         <div className="flex gap-1.5 overflow-x-auto">
           {([
             ["all", "All"],
-            ["tier1", "Tier 1"],
-            ["tier2", "Tier 2"],
+            ["tier1", "Critical"],
+            ["tier2", "Routine review"],
             ["stable", "Stable"],
           ] as const).map(([k, label]) => (
             <button
@@ -92,7 +92,7 @@ function PatientRow({ p }: { p: PatientSummary }) {
       ? "bg-destructive/10 text-destructive"
       : p.tier === "tier2"
         ? "bg-warning/20 text-warning-foreground"
-        : "bg-success/15 text-success-foreground";
+        : "bg-success/15 text-success";
 
   return (
     <Link
@@ -130,13 +130,21 @@ function PatientRow({ p }: { p: PatientSummary }) {
       </div>
 
       <div>
-        <p className="text-[10px] uppercase text-muted-foreground">Voice 14d</p>
+        <p className="text-[10px] uppercase text-muted-foreground">Voice vs own baseline</p>
         <Sparkline values={p.voiceTrend} className="mt-1 h-8 w-full" />
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          {p.monitoring.deviation === null
+            ? "Baseline building"
+            : `S_voice ${p.monitoring.deviation >= 0 ? "+" : ""}${p.monitoring.deviation.toFixed(2)}`}
+        </p>
       </div>
 
       <div>
         <p className="text-[10px] uppercase text-muted-foreground">Last check-in</p>
         <p className="font-display text-sm font-semibold">{fmtRelative(p.lastCheckIn)}</p>
+        <p className={`mt-0.5 text-[11px] ${p.monitoring.supplyDays <= 3 ? "font-semibold text-destructive" : "text-muted-foreground"}`}>
+          {p.monitoring.supplyDays} days of pills left
+        </p>
       </div>
     </Link>
   );

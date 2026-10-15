@@ -1,3 +1,4 @@
+import { assessPatient, impairmentFromStability, type MonitoringResult, type RiskLevel } from "./monitoring";
 // Central mock data for the NeuroTrack prototype.
 // Swap for real API calls (Django REST + FastAPI voice service) later —
 // the shapes here are close to the eventual DTOs.
@@ -40,6 +41,10 @@ export interface PatientSummary {
   lastCheckIn: string; // ISO
   voiceTrend: number[]; // last 14 stability scores 0..1
   flag?: string;
+  pillsLeft: number;
+  pillsPerDay: number;
+  falls7d: number;
+  monitoring: MonitoringResult;
 }
 
 export interface Alert {
@@ -112,7 +117,7 @@ export const patientAppointments: Appointment[] = [
     title: "Neurology follow-up",
     clinician: "Dr. Chikafu",
     when: hoursFromNow(24 * 6 + 2),
-    location: "Cimas Borrowdale",
+    location: "Parirenyatwa Neurology Clinic",
     status: "scheduled",
   },
   {
@@ -120,14 +125,14 @@ export const patientAppointments: Appointment[] = [
     title: "Neurology follow-up",
     clinician: "Dr. Chikafu",
     when: hoursFromNow(-24 * 45),
-    location: "Cimas Borrowdale",
+    location: "Parirenyatwa Neurology Clinic",
     status: "completed",
   },
 ];
 
 // ---- Clinician (Dr. Chikafu) ----
 
-export const roster: PatientSummary[] = [
+const rosterSeed: Omit<PatientSummary, "monitoring" | "pillsLeft" | "pillsPerDay" | "falls7d">[] = [
   {
     id: "p1",
     name: "Tendai Moyo",
@@ -199,6 +204,38 @@ export const roster: PatientSummary[] = [
   },
 ];
 
+const telemetry: Record<string, { pillsLeft: number; pillsPerDay: number; falls7d: number }> = {
+  p1: { pillsLeft: 24, pillsPerDay: 3, falls7d: 2 },
+  p2: { pillsLeft: 40, pillsPerDay: 3, falls7d: 0 },
+  p3: { pillsLeft: 7, pillsPerDay: 2, falls7d: 0 },
+  p4: { pillsLeft: 60, pillsPerDay: 3, falls7d: 0 },
+  p5: { pillsLeft: 45, pillsPerDay: 3, falls7d: 1 },
+  p6: { pillsLeft: 80, pillsPerDay: 2, falls7d: 0 },
+};
+
+const toTier = (l: RiskLevel): PatientSummary["tier"] =>
+  l === "critical" ? "tier1" : l === "routine" ? "tier2" : "stable";
+
+/** Roster with levels computed by the monitoring engine against each patient's own baseline. */
+export const roster: PatientSummary[] = rosterSeed.map((p) => {
+  const t = telemetry[p.id] ?? { pillsLeft: 30, pillsPerDay: 3, falls7d: 0 };
+  const monitoring = assessPatient({
+    voiceScores: p.voiceTrend.map(impairmentFromStability),
+    falls7d: t.falls7d,
+    adherence7d: p.adherence7d,
+    pillsLeft: t.pillsLeft,
+    pillsPerDay: t.pillsPerDay,
+    lastCheckInHoursAgo: (Date.now() - new Date(p.lastCheckIn).getTime()) / 3.6e6,
+  });
+  return {
+    ...p,
+    ...t,
+    monitoring,
+    tier: toTier(monitoring.level),
+    flag: monitoring.level === "stable" ? undefined : monitoring.reasons.join(" · "),
+  };
+});
+
 export const alerts: Alert[] = [
   {
     id: "al1",
@@ -232,7 +269,7 @@ export const alerts: Alert[] = [
 // ---- Helpers ----
 
 export function tierLabel(t: PatientSummary["tier"]) {
-  return t === "tier1" ? "Tier 1 · urgent" : t === "tier2" ? "Tier 2 · review" : "Stable";
+  return t === "tier1" ? "Critical alert" : t === "tier2" ? "Routine review" : "Stable";
 }
 
 export function fmtRelative(iso: string) {

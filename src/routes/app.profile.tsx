@@ -213,7 +213,7 @@ function Profile() {
           <Row icon={Bell} label="Daily reminders">
             <Toggle checked={remind} onChange={setRemind} />
           </Row>
-          <Row icon={Shield} label="Share data with Cimas">
+          <Row icon={Shield} label="Share data with my care team">
             <Toggle checked={share} onChange={setShare} />
           </Row>
           <Row icon={HeartPulse} label="Emergency contact" hint="Blessing Moyo · Daughter">
