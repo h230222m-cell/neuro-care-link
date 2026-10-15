@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
 
-export function PatientError({ error, reset }: { error: Error; reset: () => void }) {
+export function PatientError({ error, reset }: import("@tanstack/react-router").ErrorComponentProps) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "patient_route" });
