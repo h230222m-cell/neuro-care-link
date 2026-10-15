@@ -8,7 +8,7 @@ export const Route = createFileRoute("/clinician/")({
   head: () => ({
     meta: [
       { title: "Roster — NeuroTrack Clinician" },
-      { name: "description", content: "Patient roster with tier flags, adherence and voice trends for the Cimas team." },
+      { name: "description", content: "Patient roster with tier flags, adherence and voice trends for the care team." },
       { property: "og:title", content: "Roster — NeuroTrack Clinician" },
       { property: "og:description", content: "Prioritized care queue." },
     ],

@@ -23,7 +23,7 @@ export const Route = createFileRoute("/app/diary")({
       { property: "og:title", content: "Symptom diary — NeuroTrack" },
       {
         property: "og:description",
-        content: "Your daily symptom log, shared with your Cimas clinician.",
+        content: "Your daily symptom log, shared with your clinician.",
       },
     ],
   }),
@@ -175,7 +175,7 @@ function Diary() {
           </button>
           {form.had_accidental_fall && (
             <p className="text-xs text-warning-foreground">
-              Falls are sent to your Cimas clinician straight away.
+              Falls are sent to your clinician straight away.
             </p>
           )}
         </div>

@@ -94,7 +94,7 @@ function Home() {
       </section>
 
       <p className="mt-8 rounded-lg border border-border bg-card p-3 text-center text-xs text-muted-foreground">
-        NeuroTrack surfaces voice and medication trends for Cimas clinicians — it does not diagnose
+        NeuroTrack surfaces voice and medication trends for clinicians — it does not diagnose
         or change your medication.
       </p>
     </div>

@@ -6,7 +6,7 @@
 
 /*
  * NeuroTrack design system
- * Warm, safe medical palette built around Cimas blue.
+ * Warm, safe medical palette built around clinical blue.
  * Semantic tokens only — never hardcode colors in components.
  */
 
@@ -48,7 +48,7 @@
 :root {
   --radius: 0.875rem;
 
-  /* Cimas blue on a clean, near-white grey */
+  /* clinical blue on a clean, near-white grey */
   --background: oklch(0.982 0.004 250);
   --foreground: oklch(0.2 0.03 255);
 
@@ -58,7 +58,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0.03 255);
 
-  --primary: oklch(0.5 0.15 255);          /* Cimas blue */
+  --primary: oklch(0.5 0.15 255);          /* clinical blue */
   --primary-foreground: oklch(0.99 0.005 250);
   --primary-soft: oklch(0.955 0.025 255);  /* tinted surface */
   --primary-glow: oklch(0.64 0.16 250);

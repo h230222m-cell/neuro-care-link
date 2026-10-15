@@ -79,16 +79,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "NeuroTrack — Parkinson's monitoring for Cimas" },
+      { title: "NeuroTrack — Parkinson's remote monitoring" },
       {
         name: "description",
         content:
-          "NeuroTrack helps Parkinson's patients in Zimbabwe check in daily and lets Cimas clinicians catch concerning trends early. Decision-support only.",
+          "NeuroTrack helps Parkinson's patients in Zimbabwe check in daily and lets clinicians catch concerning trends early. Decision-support only.",
       },
       { property: "og:title", content: "NeuroTrack — Parkinson's monitoring" },
       {
         property: "og:description",
-        content: "Daily patient check-ins and AI-flagged trends for Cimas clinicians.",
+        content: "Daily patient check-ins and AI-flagged trends for clinicians.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

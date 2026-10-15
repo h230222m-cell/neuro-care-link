@@ -20,7 +20,7 @@ export const Route = createFileRoute("/app/meds")({
   head: () => ({
     meta: [
       { title: "Medications — NeuroTrack" },
-      { name: "description", content: "Your prescriptions, pill supply, dose compliance and Cimas refill orders." },
+      { name: "description", content: "Your prescriptions, pill supply, dose compliance and pharmacy refill orders." },
       { property: "og:title", content: "Medications — NeuroTrack" },
       { property: "og:description", content: "Pill inventory, adherence, automatic refills." },
     ],
@@ -64,7 +64,7 @@ function Meds() {
         <div className="min-w-0 flex-1">
           <h1 className="font-display text-2xl font-semibold tracking-tight">Medications</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Doses, pill supply and Cimas refills.
+            Doses, pill supply and pharmacy refills.
           </p>
         </div>
         <button
@@ -188,7 +188,7 @@ function Meds() {
                     disabled={requestRefill.isPending}
                     className="mt-3 w-full rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-50"
                   >
-                    {requestRefill.isPending ? "Sending…" : "Request refill from Cimas"}
+                    {requestRefill.isPending ? "Sending…" : "Request refill from pharmacy"}
                   </button>
                 )
               )}

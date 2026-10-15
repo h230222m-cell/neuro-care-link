@@ -112,7 +112,7 @@ export const patientAppointments: Appointment[] = [
     title: "Neurology follow-up",
     clinician: "Dr. Chikafu",
     when: hoursFromNow(24 * 6 + 2),
-    location: "Cimas Borrowdale",
+    location: "Parirenyatwa Neurology Clinic",
     status: "scheduled",
   },
   {
@@ -120,7 +120,7 @@ export const patientAppointments: Appointment[] = [
     title: "Neurology follow-up",
     clinician: "Dr. Chikafu",
     when: hoursFromNow(-24 * 45),
-    location: "Cimas Borrowdale",
+    location: "Parirenyatwa Neurology Clinic",
     status: "completed",
   },
 ];

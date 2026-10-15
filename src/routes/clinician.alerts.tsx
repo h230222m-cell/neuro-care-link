@@ -11,7 +11,7 @@ export const Route = createFileRoute("/clinician/alerts")({
       { title: "Alerts inbox — NeuroTrack Clinician" },
       { name: "description", content: "Tier 1 and Tier 2 patient escalations, ready to acknowledge or assign." },
       { property: "og:title", content: "Alerts inbox — NeuroTrack Clinician" },
-      { property: "og:description", content: "Focused Cimas patient escalations." },
+      { property: "og:description", content: "Focused patient escalations." },
     ],
   }),
   component: Alerts,
@@ -28,7 +28,7 @@ function Alerts() {
     <div>
       <h1 className="font-display text-3xl font-semibold tracking-tight">Alerts inbox</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Tier 1 auto-notifies Cimas · Tier 2 requires clinician review.
+        Critical alerts notify the care team automatically · Routine review needs a clinician.
       </p>
 
       <FallEventsPanel />

@@ -6,7 +6,7 @@ export const Route = createFileRoute("/app/care")({
   head: () => ({
     meta: [
       { title: "Appointments — NeuroTrack" },
-      { name: "description", content: "Your next Cimas appointment and time remaining." },
+      { name: "description", content: "Your next clinic appointment and time remaining." },
       { property: "og:title", content: "Appointments — NeuroTrack" },
       { property: "og:description", content: "Know exactly when your next visit is due." },
     ],
@@ -22,7 +22,7 @@ function Care() {
   return (
     <div className="px-5 pb-6 pt-6">
       <h1 className="font-display text-2xl font-semibold tracking-tight">Appointments</h1>
-      <p className="mt-1 text-sm text-muted-foreground">When your next Cimas visit is due.</p>
+      <p className="mt-1 text-sm text-muted-foreground">When your next clinic visit is due.</p>
 
       {next && <Countdown when={next.when} title={next.title} location={next.location} />}
 

@@ -242,7 +242,7 @@ export function VoiceCaptureCard({ onSaved }: { onSaved?: (c: VoiceCapture) => v
       />
 
       <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
-        Recorded as 16 kHz mono WAV and sent over an encrypted connection to your Cimas care team.
+        Recorded as 16 kHz mono WAV and sent over an encrypted connection to your care team.
         Nothing is shared with anyone else.
       </p>
     </div>

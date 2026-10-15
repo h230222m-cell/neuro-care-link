@@ -8,7 +8,7 @@ export const Route = createFileRoute("/clinician/analytics")({
       { title: "Analytics — NeuroTrack Clinician" },
       { name: "description", content: "Cohort adherence, voice trends and tier distribution across your NeuroTrack patients." },
       { property: "og:title", content: "Analytics — NeuroTrack Clinician" },
-      { property: "og:description", content: "Population-level insights for the Cimas neurology team." },
+      { property: "og:description", content: "Population-level insights for the neurology care team." },
     ],
   }),
   component: Analytics,

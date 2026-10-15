@@ -16,7 +16,7 @@ export type RefillStatus =
 
 export const REFILL_STATUS_LABEL: Record<RefillStatus, string> = {
   AUTO_GENERATED: "Auto generated",
-  APPROVED: "Approved by Cimas",
+  APPROVED: "Approved by pharmacy",
   DISPATCHED: "Dispatched",
   COMPLETED: "Completed",
   CANCELLED: "Cancelled",
