@@ -26,7 +26,7 @@ function Roster() {
     return roster
       .filter((p) => (filter === "all" ? true : p.tier === filter))
       .filter((p) => p.name.toLowerCase().includes(q.toLowerCase()))
-      .sort((a, b) => tierRank(a.tier) - tierRank(b.tier));
+      .sort((a, b) => tierRank(a.tier) - tierRank(b.tier) || (b.monitoring.deviation ?? 0) - (a.monitoring.deviation ?? 0));
   }, [q, filter]);
 
   return (
@@ -130,13 +130,21 @@ function PatientRow({ p }: { p: PatientSummary }) {
       </div>
 
       <div>
-        <p className="text-[10px] uppercase text-muted-foreground">Voice 14d</p>
+        <p className="text-[10px] uppercase text-muted-foreground">Voice vs own baseline</p>
         <Sparkline values={p.voiceTrend} className="mt-1 h-8 w-full" />
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          {p.monitoring.deviation === null
+            ? "Baseline building"
+            : `S_voice ${p.monitoring.deviation >= 0 ? "+" : ""}${p.monitoring.deviation.toFixed(2)}`}
+        </p>
       </div>
 
       <div>
         <p className="text-[10px] uppercase text-muted-foreground">Last check-in</p>
         <p className="font-display text-sm font-semibold">{fmtRelative(p.lastCheckIn)}</p>
+        <p className={`mt-0.5 text-[11px] ${p.monitoring.supplyDays <= 3 ? "font-semibold text-destructive" : "text-muted-foreground"}`}>
+          {p.monitoring.supplyDays} days of pills left
+        </p>
       </div>
     </Link>
   );

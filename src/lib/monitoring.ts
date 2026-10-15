@@ -108,7 +108,7 @@ export function assessPatient(i: MonitoringInput): MonitoringResult {
   const deviation = baseline && recent !== null ? recent - baseline.value : null;
   const supplyDays = daysOfSupply(i.pillsLeft, i.pillsPerDay);
   const reasons: string[] = [];
-  let level: RiskLevel = "stable";
+  let level = "stable" as RiskLevel;
   const raise = (l: RiskLevel) => {
     if (l === "critical" || (l === "routine" && level === "stable")) level = l;
   };
