@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
           "A calm daily check-in for patients and a focused clinical console for clinicians. Decision-support only.",
       },
       { property: "og:title", content: "NeuroTrack — Daily monitoring for Parkinson's care" },
-      { property: "og:description", content: "Focused daily monitoring built with Cimas neurology in Zimbabwe." },
+      { property: "og:description", content: "Focused daily monitoring for Parkinson's care in Zimbabwe." },
     ],
   }),
   component: Landing,
