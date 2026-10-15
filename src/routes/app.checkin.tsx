@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Pill, Check, X } from "lucide-react";
 import { createDoseLog, listPrescriptions } from "@/lib/api/client";
-import { doseTimes, type Prescription } from "@/lib/api/types";
+import { dailyDoseRate, doseTimes, type Prescription } from "@/lib/api/types";
 import { daysOfSupply, REFILL_THRESHOLD_DAYS } from "@/lib/monitoring";
 import { VoiceCaptureCard } from "@/components/patient/VoiceCaptureCard";
 import { fmtClock, slotDate } from "@/lib/dose-timers";
